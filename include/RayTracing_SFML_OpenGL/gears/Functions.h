@@ -7,7 +7,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <cstddef>
+#include <iostream>
 
 
 // --- ImGui
@@ -34,3 +41,5 @@ extern bool ignore_input;
 int mouse_down(const sf::Mouse::Button& B);
 int key_down(const sf::Keyboard::Key& B);
 int key_hit(const sf::Keyboard::Key& key);
+
+// --- OpenGL

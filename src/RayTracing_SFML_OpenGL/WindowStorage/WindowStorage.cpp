@@ -1,10 +1,16 @@
 #include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
-
+#include <vector>
 
 WindowStorage::WindowStorage(std::wstring window_title)
 {
-    window_.create(sf::VideoMode(400u, 400u), window_title, sf::Style::Default, sf::ContextSettings(32));
-    window_.setVerticalSyncEnabled(true);
+    window_.create(sf::VideoMode(1920u, 1080u), window_title, sf::Style::Default, sf::ContextSettings(32));
+    // window_.setVerticalSyncEnabled(true);
+    // window_.setFramerateLimit(60);
+    
+    if (!font.loadFromFile("cyrillic.ttf"))
+    {
+        std::cout << "Can't load font!" << std::endl;
+    }
 }
 
 
@@ -81,12 +87,44 @@ void WindowStorage::window_flip()
 
 void WindowStorage::render_view()
 {
+    // --- Ray Tracing
+
+    glm::vec2 size{ window_.getSize().x, window_.getSize().y };
+
     window_.setActive(true);
+
+    glBegin(GL_POINTS);
     
-    glBegin(GL_LINES);
-     glVertex2f(-1.f, -1.f);
-     glVertex2f( 1.f,  1.f);
+    float col_r, col_g;
+    float pos_x, pos_y;
+
+    int x, y;
+    for (y = 0; y < size.y; ++y)
+    {
+        for (x = 0; x < size.x; ++x)
+        {
+            col_r = x / size.x;
+            col_g = y / size.y;
+
+            pos_x = 2.f * x / size.x - 1.f;
+            pos_y = 2.f * y / size.y - 1.f;
+
+            glColor3f(col_r, col_g, 0.f);
+            glVertex2f(pos_x, pos_y);
+        }
+    }
+
     glEnd();
-    
+
     window_.setActive(false);
+
+    // --- FPS
+
+    window_.pushGLStates();
+
+    sf::Text fps_txt{std::to_string(ImGui::GetIO().Framerate), font, 20};
+    fps_txt.setFillColor(sf::Color::White);
+    window_.draw(fps_txt);
+
+    window_.popGLStates();
 }

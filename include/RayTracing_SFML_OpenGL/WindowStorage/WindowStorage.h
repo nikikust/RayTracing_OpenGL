@@ -9,6 +9,7 @@ class WindowStorage
 public:
     WindowStorage(std::wstring window_title);
 
+    WindowStorage() = delete;
     WindowStorage(WindowStorage& other) = delete;
     WindowStorage(WindowStorage&& other) = delete;
     
@@ -35,4 +36,7 @@ private:
     sf::Clock deltaClock_;
 
     bool running_ = true;
+
+    sf::Font font;
+
 };

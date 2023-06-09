@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(RayTracing_SFML_OpenGL LANGUAGES CXX)
 
-
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_CXX_STANDARD 20)
 
@@ -50,3 +49,6 @@ target_link_libraries(${PROJECT_NAME}
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
 )
+
+
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/PROFILE")

@@ -23,7 +23,12 @@ int main()
 
         // --- Logic
 
-        
+        if (key_hit(sf::Keyboard::Escape))
+            window_storage.shutdown();
+
+        // --- Windows
+
+
 
         // --- Render
         window_storage.window_cls();
