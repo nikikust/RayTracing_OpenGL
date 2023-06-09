@@ -1,0 +1,4 @@
+# VS project directory
+.vs
+out
+CMakePresets.json
