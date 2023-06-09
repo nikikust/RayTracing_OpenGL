@@ -23,13 +23,16 @@ int main()
 
         // --- Logic
 
-
+        
 
         // --- Render
         window_storage.window_cls();
+        window_storage.render_view();
         window_storage.ImGui_render();
         window_storage.window_flip();
     }
+
+    window_storage.ImGui_shutdown();
 
     return 0;
 }

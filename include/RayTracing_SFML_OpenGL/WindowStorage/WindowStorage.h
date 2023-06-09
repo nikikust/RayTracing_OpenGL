@@ -28,6 +28,8 @@ public:
     void window_cls();
     void window_flip();
 
+    void render_view();
+
 private:
     sf::RenderWindow window_;
     sf::Clock deltaClock_;
