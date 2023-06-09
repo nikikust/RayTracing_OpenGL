@@ -1,42 +1,34 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
-
-#include <RayTracing_SFML_OpenGL/Functions.h>
+#include <RayTracing_SFML_OpenGL/gears/Functions.h>
+#include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
 
 
 int main()
 {
     // --- Initialization --- //
 
-    sf::Window main_window(sf::VideoMode(400u, 400u), L"Трасировка Лучей", sf::Style::Default, sf::ContextSettings(32));
-    main_window.setVerticalSyncEnabled(true);
-
-    main_window.setActive(true);
-
+    WindowStorage window_storage(L"Трасировка Лучей");
+    window_storage.ImGui_init();
 
     // --- Main Loop --- //
 
-    bool running = true;
-    while (running)
+    while (window_storage.isRunning())
     {
-        sf::Event event;
-        while (main_window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                running = false;
-            }
-            else if (event.type == sf::Event::Resized)
-            {
-                glViewport(0, 0, event.size.width, event.size.height);
-            }
-        }
+        // --- Process OS Window
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        window_storage.pollEvents();
 
-        // draw...
+        ignore_input = !window_storage.window_has_focus();
 
-        main_window.display();
+        window_storage.ImGui_update();
+
+        // --- Logic
+
+
+
+        // --- Render
+        window_storage.window_cls();
+        window_storage.ImGui_render();
+        window_storage.window_flip();
     }
 
     return 0;
