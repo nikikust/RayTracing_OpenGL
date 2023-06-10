@@ -22,6 +22,7 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 
 add_library(gears STATIC
     src/RayTracing_SFML_OpenGL/gears/Functions.cpp
+    src/RayTracing_SFML_OpenGL/gears/StaticThreadPool.cpp
 )
 target_link_libraries(gears
     imgui::imgui

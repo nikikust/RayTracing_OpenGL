@@ -2,6 +2,7 @@
 #include <string>
 
 #include <RayTracing_SFML_OpenGL/gears/Functions.h>
+#include <RayTracing_SFML_OpenGL/gears/StaticThreadPool.hpp>
 
 
 class WindowStorage
@@ -13,6 +14,8 @@ public:
     WindowStorage(WindowStorage& other) = delete;
     WindowStorage(WindowStorage&& other) = delete;
     
+    ~WindowStorage();
+
     bool operator==(const WindowStorage& other) const = delete;
 
     void shutdown();
@@ -39,4 +42,5 @@ private:
 
     sf::Font font;
 
+    gears::StaticThreadPool stp;
 };

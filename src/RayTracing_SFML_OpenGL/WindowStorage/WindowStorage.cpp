@@ -1,7 +1,8 @@
 #include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
-#include <vector>
+
 
 WindowStorage::WindowStorage(std::wstring window_title)
+    : stp(10)
 {
     window_.create(sf::VideoMode(1920u, 1080u), window_title, sf::Style::Default, sf::ContextSettings(32));
     // window_.setVerticalSyncEnabled(true);
@@ -12,7 +13,10 @@ WindowStorage::WindowStorage(std::wstring window_title)
         std::cout << "Can't load font!" << std::endl;
     }
 }
-
+WindowStorage::~WindowStorage()
+{
+    stp.Join();
+}
 
 void WindowStorage::shutdown()
 {
@@ -29,8 +33,18 @@ void WindowStorage::pollEvents()
         case sf::Event::Closed:
             running_ = false;
             break;
-        case sf::Event::Resized: 
+        case sf::Event::Resized: {
+            window_.setActive(true);
             glViewport(0, 0, event.size.width, event.size.height);
+            window_.setActive(false);
+
+            window_.pushGLStates();
+            sf::FloatRect visibleArea(0.f, 0.f,
+                static_cast<float>(event.size.width),
+                static_cast<float>(event.size.height));
+            window_.setView(sf::View(visibleArea));
+            window_.popGLStates();
+        }
             break;
         case sf::Event::KeyReleased:
             keyHit[event.key.code] = false;
