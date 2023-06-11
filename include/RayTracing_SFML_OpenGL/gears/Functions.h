@@ -33,7 +33,7 @@ namespace gears
 
 	bool block();                           // ImGUI::Sameline(); && return true;
 	void SelectableColor(ImU32 color);
-	float get_button_width(std::string text, ImGuiStyle& style);
+	float get_button_width(const std::string& text, ImGuiStyle& style);
 
 	// --- SFML
 
@@ -46,7 +46,7 @@ namespace gears
 
 	// --- OpenGL
 
-	struct Pos
+	struct Position
 	{
 		float x = 0.f, y = 0.f;
 	};
@@ -58,7 +58,7 @@ namespace gears
 
 	struct Vertex
 	{
-		Pos pos;
+		Position pos;
 		Color color;
 	};
 

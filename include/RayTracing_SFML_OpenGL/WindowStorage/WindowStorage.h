@@ -2,12 +2,13 @@
 #include <string>
 
 #include <RayTracing_SFML_OpenGL/gears/Functions.h>
+#include <RayTracing_SFML_OpenGL/Tracer/Tracer.h>
 
 
 class WindowStorage
 {
 public:
-    WindowStorage(std::wstring window_title);
+    WindowStorage(const std::wstring& window_title);
 
     WindowStorage() = delete;
     WindowStorage(WindowStorage& other) = delete;
@@ -31,8 +32,6 @@ public:
 
     void render_view();
 
-    void trace_rays(const glm::vec2& start, const glm::vec2& stop_x, const glm::vec2& size, sf::RenderWindow& window) const;
-
 private:
     sf::RenderWindow window_;
     sf::Clock deltaClock_;
@@ -40,5 +39,4 @@ private:
     bool running_ = true;
 
     sf::Font font_;
-
 };

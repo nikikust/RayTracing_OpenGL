@@ -6,7 +6,7 @@ int main()
 {
     // --- Initialization --- //
 
-    WindowStorage window_storage(L"Трасировка Лучей");
+    WindowStorage window_storage(L"Трассировка Лучей");
     window_storage.ImGui_init();
 
     // --- Main Loop --- //

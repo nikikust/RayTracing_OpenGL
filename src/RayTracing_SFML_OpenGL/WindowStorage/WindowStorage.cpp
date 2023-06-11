@@ -1,7 +1,7 @@
 #include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
 
 
-WindowStorage::WindowStorage(std::wstring window_title)
+WindowStorage::WindowStorage(const std::wstring& window_title)
 {
     window_.create(sf::VideoMode(1920u, 1080u), window_title, sf::Style::Default, sf::ContextSettings(32));
     // window_.setVerticalSyncEnabled(true);
@@ -103,23 +103,17 @@ void WindowStorage::render_view()
     window_.setActive(true);
 
     glBegin(GL_POINTS);
-    
-    float col_r, col_g;
+
     float pos_x, pos_y;
 
-    int x, y;
-    for (y = 0; y < size.y; ++y)
+    for (int y = 0; y < size.y; ++y)
     {
-        for (x = 0; x < size.x; ++x)
+        for (int x = 0; x < size.x; ++x)
         {
-            col_r = x / size.x;
-            col_g = y / size.y;
-
             pos_x = 2.f * x / size.x - 1.f;
             pos_y = 2.f * y / size.y - 1.f;
 
-            glColor3f(col_r, col_g, 0.f);
-            glVertex2f(pos_x, pos_y);
+            tracer::trace_ray({ pos_x, pos_y });
         }
     }
 

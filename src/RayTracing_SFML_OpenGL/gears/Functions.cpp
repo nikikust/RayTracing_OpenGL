@@ -39,7 +39,7 @@ namespace gears
 		ImVec2 p_max = ImGui::GetItemRectMax();
 		ImGui::GetWindowDrawList()->AddRectFilled(p_min, p_max, color);
 	}
-	float get_button_width(std::string text, ImGuiStyle& style)
+	float get_button_width(const std::string& text, ImGuiStyle& style)
 	{
 		return ImGui::CalcTextSize(text.c_str()).x + style.FramePadding.x * 2 + style.ItemSpacing.x;
 	}

@@ -30,10 +30,11 @@ target_link_libraries(gears
 )
 
 
-add_library(WindowStorage STATIC
+add_library(Core STATIC
     src/RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.cpp
+    src/RayTracing_SFML_OpenGL/Tracer/Tracer.cpp
 )
-target_link_libraries(WindowStorage
+target_link_libraries(Core
     gears
     imgui::imgui
     sfml-graphics sfml-system sfml-window
@@ -45,7 +46,7 @@ add_executable(${PROJECT_NAME}
     src/RayTracing_SFML_OpenGL/main.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-    WindowStorage
+    Core
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
 )
