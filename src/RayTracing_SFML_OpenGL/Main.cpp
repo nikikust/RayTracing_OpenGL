@@ -17,13 +17,13 @@ int main()
 
         window_storage.pollEvents();
 
-        ignore_input = !window_storage.window_has_focus();
+        gears::ignore_input = !window_storage.window_has_focus();
 
         window_storage.ImGui_update();
 
         // --- Logic
 
-        if (key_hit(sf::Keyboard::Escape))
+        if (gears::key_hit(sf::Keyboard::Escape))
             window_storage.shutdown();
 
         // --- Windows

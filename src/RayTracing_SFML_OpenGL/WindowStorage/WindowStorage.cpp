@@ -1,5 +1,5 @@
 #include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
-#include <vector>
+
 
 WindowStorage::WindowStorage(std::wstring window_title)
 {
@@ -7,7 +7,7 @@ WindowStorage::WindowStorage(std::wstring window_title)
     // window_.setVerticalSyncEnabled(true);
     // window_.setFramerateLimit(60);
     
-    if (!font.loadFromFile("cyrillic.ttf"))
+    if (!font_.loadFromFile("cyrillic.ttf"))
     {
         std::cout << "Can't load font!" << std::endl;
     }
@@ -29,11 +29,20 @@ void WindowStorage::pollEvents()
         case sf::Event::Closed:
             running_ = false;
             break;
-        case sf::Event::Resized: 
+        case sf::Event::Resized: {
+            window_.setActive(true);
             glViewport(0, 0, event.size.width, event.size.height);
+            window_.setActive(false);
+
+            window_.pushGLStates();
+            sf::FloatRect visibleArea(0.f, 0.f,
+                static_cast<float>(event.size.width),
+                static_cast<float>(event.size.height));
+            window_.setView(sf::View(visibleArea));
+            window_.popGLStates(); }
             break;
         case sf::Event::KeyReleased:
-            keyHit[event.key.code] = false;
+            gears::keyHit[event.key.code] = false;
             break;
         default:
             break;
@@ -122,7 +131,7 @@ void WindowStorage::render_view()
 
     window_.pushGLStates();
 
-    sf::Text fps_txt{std::to_string(ImGui::GetIO().Framerate), font, 20};
+    sf::Text fps_txt{std::to_string(ImGui::GetIO().Framerate), font_, 20};
     fps_txt.setFillColor(sf::Color::White);
     window_.draw(fps_txt);
 

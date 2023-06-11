@@ -31,12 +31,14 @@ public:
 
     void render_view();
 
+    void trace_rays(const glm::vec2& start, const glm::vec2& stop_x, const glm::vec2& size, sf::RenderWindow& window) const;
+
 private:
     sf::RenderWindow window_;
     sf::Clock deltaClock_;
 
     bool running_ = true;
 
-    sf::Font font;
+    sf::Font font_;
 
 };
