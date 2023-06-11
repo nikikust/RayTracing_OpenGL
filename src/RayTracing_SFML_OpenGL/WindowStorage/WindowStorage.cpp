@@ -2,20 +2,20 @@
 
 
 WindowStorage::WindowStorage(std::wstring window_title)
-    : stp(10)
+    : stp_(THREADPOOL_SIZE)
 {
     window_.create(sf::VideoMode(1920u, 1080u), window_title, sf::Style::Default, sf::ContextSettings(32));
     // window_.setVerticalSyncEnabled(true);
     // window_.setFramerateLimit(60);
     
-    if (!font.loadFromFile("cyrillic.ttf"))
+    if (!font_.loadFromFile("cyrillic.ttf"))
     {
         std::cout << "Can't load font!" << std::endl;
     }
 }
 WindowStorage::~WindowStorage()
 {
-    stp.Join();
+    stp_.Join();
 }
 
 void WindowStorage::shutdown()
@@ -47,7 +47,7 @@ void WindowStorage::pollEvents()
         }
             break;
         case sf::Event::KeyReleased:
-            keyHit[event.key.code] = false;
+            gears::keyHit[event.key.code] = false;
             break;
         default:
             break;
@@ -105,40 +105,83 @@ void WindowStorage::render_view()
 
     glm::vec2 size{ window_.getSize().x, window_.getSize().y };
 
-    window_.setActive(true);
+    int step = (int)ceil(size.y / (float)THREADPOOL_SIZE);
 
-    glBegin(GL_POINTS);
-    
-    float col_r, col_g;
-    float pos_x, pos_y;
 
-    int x, y;
-    for (y = 0; y < size.y; ++y)
+    std::vector<std::future<void>> results;
+    results.reserve(THREADPOOL_SIZE);
+
+    for (int i = 0; i < THREADPOOL_SIZE; ++i)
     {
-        for (x = 0; x < size.x; ++x)
-        {
-            col_r = x / size.x;
-            col_g = y / size.y;
+        glm::vec2 start{0, i * step};
+        glm::vec2 stop{size.x, (i + 1) * step};
 
-            pos_x = 2.f * x / size.x - 1.f;
-            pos_y = 2.f * y / size.y - 1.f;
+        sf::RenderWindow& window = window_;
+        auto trace_task = [this, size, start, stop, &window]() { trace_rays(start, stop, size, window); };
 
-            glColor3f(col_r, col_g, 0.f);
-            glVertex2f(pos_x, pos_y);
-        }
+        results.emplace_back(gears::Async(stp_, trace_task));
     }
 
-    glEnd();
-
-    window_.setActive(false);
+    for (auto& f : results) {
+        f.wait();
+    }
 
     // --- FPS
 
     window_.pushGLStates();
 
-    sf::Text fps_txt{std::to_string(ImGui::GetIO().Framerate), font, 20};
+    sf::Text fps_txt{std::to_string(ImGui::GetIO().Framerate), font_, 20};
     fps_txt.setFillColor(sf::Color::White);
     window_.draw(fps_txt);
 
     window_.popGLStates();
+}
+
+void WindowStorage::trace_rays(const glm::vec2& start, const glm::vec2& stop, const glm::vec2& size, sf::RenderWindow& window) const
+{
+    if (stop.x < start.x || stop.y < start.y)
+        return;
+
+    std::array<gears::Vertex, 3000> line;
+    // line.reserve((size_t)(stop.x - start.x + 2)); // reserve place for line
+    
+    gears::Vertex pix;
+
+    for (int y = (int)start.y; y < stop.y && y < size.y; ++y)
+    {
+        // --- Calculate pixel line
+
+        for (int x = (int)start.x; x < stop.x && x < size.x; ++x)
+        {
+            pix.color.r = x / size.x;
+            pix.color.g = y / size.y;
+            pix.color.b = 0.f;
+
+            pix.pos.x = 2.f * x / size.x - 1.f;
+            pix.pos.y = 2.f * y / size.y - 1.f;
+
+            line[x] = pix;
+        }
+        // --- Submit pixel line
+
+        {
+            std::unique_lock lock(gl_mutex_);
+
+            window.setActive(true);
+
+            glBegin(GL_POINTS);
+
+            for (int x = (int)start.x; x < stop.x && x < size.x; ++x)
+            {
+                glColor3f(line[x].color.r, line[x].color.g, line[x].color.b);
+                glVertex2f(line[x].pos.x, line[x].pos.y);
+            }
+
+            glEnd();
+
+            window.setActive(false);
+        }
+
+        // --- Prepare for next line
+    }
 }

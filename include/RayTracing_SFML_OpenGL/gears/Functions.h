@@ -17,29 +17,49 @@
 #include <iostream>
 
 
-// --- ImGui
-
-inline namespace literals
+namespace gears
 {
-	char const* operator"" _C(const char8_t* str, std::size_t);
-}
+	// --- ImGui
 
-ImVec2 operator+(const ImVec2& left, const ImVec2& right);
-ImVec2 operator-(const ImVec2& left, const ImVec2& right);
-bool operator==(const ImVec2& left, const ImVec2& right);
-bool operator!=(const ImVec2& left, const ImVec2& right);
+	inline namespace literals
+	{
+		char const* operator"" _C(const char8_t* str, std::size_t);
+	}
 
-bool block();                           // ImGUI::Sameline(); && return true;
-void SelectableColor(ImU32 color);
-float get_button_width(std::string text, ImGuiStyle& style);
+	ImVec2 operator+(const ImVec2& left, const ImVec2& right);
+	ImVec2 operator-(const ImVec2& left, const ImVec2& right);
+	bool operator==(const ImVec2& left, const ImVec2& right);
+	bool operator!=(const ImVec2& left, const ImVec2& right);
 
-// --- SFML
+	bool block();                           // ImGUI::Sameline(); && return true;
+	void SelectableColor(ImU32 color);
+	float get_button_width(std::string text, ImGuiStyle& style);
 
-extern bool keyHit[];
-extern bool ignore_input;
+	// --- SFML
 
-int mouse_down(const sf::Mouse::Button& B);
-int key_down(const sf::Keyboard::Key& B);
-int key_hit(const sf::Keyboard::Key& key);
+	extern bool keyHit[];
+	extern bool ignore_input;
 
-// --- OpenGL
+	int mouse_down(const sf::Mouse::Button& B);
+	int key_down(const sf::Keyboard::Key& B);
+	int key_hit(const sf::Keyboard::Key& key);
+
+	// --- OpenGL
+	struct Pos
+	{
+		float x = 0.f, y = 0.f;
+	};
+
+	struct Color
+	{
+		float r = 0.f, g = 0.f, b = 0.f, a = 1.f;
+	};
+
+	struct Vertex
+	{
+		Pos pos ;
+
+		Color color;
+	};
+
+} // namespace gears
