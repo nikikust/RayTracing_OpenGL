@@ -1,1 +1,1 @@
-# RayTracing_SFML_OpenGL
+# RayTracing SFML OpenGL
