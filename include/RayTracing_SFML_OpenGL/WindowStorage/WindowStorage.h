@@ -39,4 +39,13 @@ private:
     bool running_ = true;
 
     sf::Font font_;
+
+    // --- Render data
+
+    gears::Position camera_position {  0.f,  0.f,  0.f };
+    gears::Angles   camera_angles   {  0.f,  1.f,  0.f };
+    gears::Angles   sun_angle       {  0.f,  0.f, -1.f };
+
+    float vFOV_half = 50.f / 2;
+    float hFOV_half = vFOV_half * (16.f / 9.f);
 };

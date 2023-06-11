@@ -1,17 +1,17 @@
 #pragma once
 #include <RayTracing_SFML_OpenGL/gears/Functions.h>
+#include <RayTracing_SFML_OpenGL/Tracer/Objects.h>
 
 
 namespace tracer
 {
-	using position = glm::vec3;
-	using angles   = glm::vec2;
-
-
-	void trace_ray(const glm::vec2& direction);
+	gears::Color trace_ray(const Ray& ray);
 
 
 	gears::Color sky_intersection();
 
-	gears::Color sphere_intersection();
+	bool intersects_sphere(const Ray& ray, const Sphere& sphere);
+	Ray reflect_from_sphere(const Ray& ray, const Sphere& sphere);
+	gears::Position sphere_intersection(const Ray& ray, const Sphere& sphere);
+
 };

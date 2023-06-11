@@ -17,6 +17,7 @@
 #include <iostream>
 
 
+
 namespace gears
 {
 	// --- ImGui
@@ -46,15 +47,9 @@ namespace gears
 
 	// --- OpenGL
 
-	struct Position
-	{
-		float x = 0.f, y = 0.f;
-	};
-
-	struct Color
-	{
-		float r = 0.f, g = 0.f, b = 0.f, a = 1.f;
-	};
+	using Position = glm::vec3;
+	using Angles   = glm::vec3;
+	using Color    = glm::vec4;
 
 	struct Vertex
 	{

@@ -113,7 +113,15 @@ void WindowStorage::render_view()
             pos_x = 2.f * x / size.x - 1.f;
             pos_y = 2.f * y / size.y - 1.f;
 
-            tracer::trace_ray({ pos_x, pos_y });
+            auto color = tracer::trace_ray(
+                tracer::Ray{
+                    camera_position, 
+                    camera_angles - gears::Angles{pos_x * hFOV_half, pos_y * vFOV_half}
+                }
+            );
+
+            glColor3f(color.r, color.g, color.b);
+            glVertex2f(pos_x, pos_y);
         }
     }
 

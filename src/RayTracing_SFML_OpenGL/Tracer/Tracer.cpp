@@ -3,18 +3,15 @@
 
 namespace tracer
 {
-    position camera_position{ 0.f, 0.f, 0.f };
-    angles camera_angles{ 0.f, 0.f };
+    // --- Config
 
-    float vFOV = 50.f;
-    float hFOV = vFOV * (16.f / 9.f);
+    uint32_t max_reflections = 8;
 
+    // --- //
 
-    void trace_ray(const glm::vec2& direction)
+    gears::Color trace_ray(const Ray& ray)
     {
-        auto color = sky_intersection();
-        glColor3f(color.r, color.g, color.b);
-        glVertex2f(direction.x, direction.y);
+        return sky_intersection();
     }
 
 
@@ -23,9 +20,17 @@ namespace tracer
         return { 100.f / 255, 150.f / 255, 200.f / 255, 1.f };
     }
 
-    gears::Color sphere_intersection()
+    bool intersects_sphere(const Ray& ray, const Sphere& sphere)
     {
-        return { 0.f, 0.f, 0.f, 1.f };
+        return false;
+    }
+    Ray reflect_from_sphere(const Ray& ray, const Sphere& sphere)
+    {
+        return ray;
+    }
+    gears::Position sphere_intersection(const Ray& ray, const Sphere& sphere)
+    {
+        return sphere.position;
     }
 
 } // namespace Tracer
