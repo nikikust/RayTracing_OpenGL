@@ -94,6 +94,11 @@ void WindowStorage::window_flip()
     window_.display();
 }
 
+sf::Vector2u WindowStorage::get_view_area()
+{
+    return window_.getSize();
+}
+
 void WindowStorage::render_view()
 {
     // --- Ray Tracing
@@ -104,19 +109,22 @@ void WindowStorage::render_view()
 
     glBegin(GL_POINTS);
 
-    float pos_x, pos_y;
-
     for (int y = 0; y < size.y; ++y)
     {
         for (int x = 0; x < size.x; ++x)
         {
-            pos_x = 2.f * x / size.x - 1.f;
-            pos_y = 2.f * y / size.y - 1.f;
+            float pos_x = 2.f * x / size.x - 1.f;
+            float pos_y = 2.f * y / size.y - 1.f;
+            
+            gears::Angles angles = { camera.angles.x + pos_x * hFOV_half, 
+                                     camera.angles.y + pos_y * vFOV_half };
 
+            gears::LookAt ray_direction{std::sinf(angles.x) * std::cosf(angles.y), std::cosf(angles.x) * std::cosf(angles.y), std::sinf(angles.y)};
+            
             auto color = tracer::trace_ray(
                 tracer::Ray{
-                    camera_position, 
-                    camera_angles - gears::Angles{pos_x * hFOV_half, pos_y * vFOV_half}
+                    camera.origin,
+                    glm::normalize(ray_direction)
                 }
             );
 
@@ -139,3 +147,22 @@ void WindowStorage::render_view()
 
     window_.popGLStates();
 }
+
+tracer::Camera& WindowStorage::get_camera()
+{
+    return camera;
+}
+
+void WindowStorage::set_cursor_position(sf::Vector2u position)
+{
+    sf::Mouse::setPosition({ (int)position.x, (int)position.y }, window_);
+}
+void WindowStorage::hide_mouse()
+{
+    window_.setMouseCursorVisible(false);
+}
+void WindowStorage::show_mouse()
+{
+    window_.setMouseCursorVisible(true);
+}
+

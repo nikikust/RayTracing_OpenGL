@@ -33,6 +33,7 @@ target_link_libraries(gears
 add_library(Core STATIC
     src/RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.cpp
     src/RayTracing_SFML_OpenGL/Tracer/Tracer.cpp
+    src/RayTracing_SFML_OpenGL/Tracer/Objects.cpp
 )
 target_link_libraries(Core
     gears

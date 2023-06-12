@@ -45,15 +45,18 @@ namespace gears
 	int key_down(const sf::Keyboard::Key& B);
 	int key_hit(const sf::Keyboard::Key& key);
 
+	
+
 	// --- OpenGL
 
-	using Position = glm::vec3;
-	using Angles   = glm::vec3;
-	using Color    = glm::vec4;
+	using Origin = glm::vec3;
+	using LookAt = glm::vec3;
+	using Angles = glm::vec2;
+	using Color  = glm::vec4;
 
 	struct Vertex
 	{
-		Position pos;
+		Origin pos;
 		Color color;
 	};
 

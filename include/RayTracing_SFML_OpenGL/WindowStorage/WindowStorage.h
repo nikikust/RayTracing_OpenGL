@@ -32,6 +32,16 @@ public:
 
     void render_view();
 
+    sf::Vector2u get_view_area();
+
+    // --- IO
+
+    tracer::Camera& get_camera();
+
+    void set_cursor_position(sf::Vector2u position);
+    void hide_mouse();
+    void show_mouse();
+
 private:
     sf::RenderWindow window_;
     sf::Clock deltaClock_;
@@ -42,10 +52,10 @@ private:
 
     // --- Render data
 
-    gears::Position camera_position {  0.f,  0.f,  0.f };
-    gears::Angles   camera_angles   {  0.f,  1.f,  0.f };
-    gears::Angles   sun_angle       {  0.f,  0.f, -1.f };
+    tracer::Camera camera = { { 0.f, 0.f, 0.f}, {0.f, 0.f} };
 
-    float vFOV_half = 50.f / 2;
+    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  0.f,  0.f, -1.f });
+
+    float vFOV_half = 50.f / 2.f * (glm::pi<float>() / 180.f);
     float hFOV_half = vFOV_half * (16.f / 9.f);
 };
