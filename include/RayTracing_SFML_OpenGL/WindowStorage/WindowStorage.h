@@ -57,5 +57,5 @@ private:
     gears::LookAt sun_angle = glm::normalize(gears::LookAt{  0.f,  0.f, -1.f });
 
     float vFOV_half = 50.f / 2.f * (glm::pi<float>() / 180.f);
-    float hFOV_half = vFOV_half * (16.f / 9.f);
+    float screen_ratio;
 };

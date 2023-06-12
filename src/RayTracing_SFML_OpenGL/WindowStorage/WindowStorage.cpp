@@ -3,10 +3,12 @@
 
 WindowStorage::WindowStorage(const std::wstring& window_title)
 {
-    window_.create(sf::VideoMode(1920u, 1080u), window_title, sf::Style::Default, sf::ContextSettings(32));
+    window_.create(sf::VideoMode(500u, 500u), window_title, sf::Style::Default, sf::ContextSettings(32));
     // window_.setVerticalSyncEnabled(true);
     // window_.setFramerateLimit(60);
-    
+
+    screen_ratio = (float)window_.getSize().x / (float)window_.getSize().y;
+
     if (!font_.loadFromFile("cyrillic.ttf"))
     {
         std::cout << "Can't load font!" << std::endl;
@@ -39,7 +41,9 @@ void WindowStorage::pollEvents()
                 static_cast<float>(event.size.width),
                 static_cast<float>(event.size.height));
             window_.setView(sf::View(visibleArea));
-            window_.popGLStates(); }
+            window_.popGLStates();
+
+            screen_ratio = (float)window_.getSize().x / (float)window_.getSize().y; }
             break;
         case sf::Event::KeyReleased:
             gears::keyHit[event.key.code] = false;
@@ -109,6 +113,9 @@ void WindowStorage::render_view()
 
     glBegin(GL_POINTS);
 
+    auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
+    float focus_distance = 1.f / std::tanf(vFOV_half);
+
     for (int y = 0; y < size.y; ++y)
     {
         for (int x = 0; x < size.x; ++x)
@@ -116,10 +123,22 @@ void WindowStorage::render_view()
             float pos_x = 2.f * x / size.x - 1.f;
             float pos_y = 2.f * y / size.y - 1.f;
             
-            gears::Angles angles = { camera.angles.x + pos_x * hFOV_half, 
-                                     camera.angles.y + pos_y * vFOV_half };
+            gears::LookAt ray_direction{
+                pos_x * screen_ratio,
+                focus_distance,
+                -pos_y
+            };
 
-            gears::LookAt ray_direction{std::sinf(angles.x) * std::cosf(angles.y), std::cosf(angles.x) * std::cosf(angles.y), std::sinf(angles.y)};
+            ray_direction = ray_direction * rotator;
+
+            // gears::Angles angles = { camera.angles.x + pos_x * hFOV_half, 
+            //                          camera.angles.y + pos_y * vFOV_half };
+
+            // gears::LookAt ray_direction{
+            //     std::sinf(angles.x) * std::cosf(angles.y), 
+            //     std::cosf(angles.x) * std::cosf(angles.y), 
+            //     std::sinf(angles.y)
+            // };
             
             auto color = tracer::trace_ray(
                 tracer::Ray{
@@ -128,8 +147,20 @@ void WindowStorage::render_view()
                 }
             );
 
+            // if (x == 0 && y%100 == 0 || x == size.x - 1 && y % 100 == 0)
+            // {
+            //     std::cout << std::setw( 6) << x
+            //               << std::setw( 6) << y
+            //               << std::setw(12) << ray_direction.x
+            //               << std::setw(12) << ray_direction.y
+            //               << std::setw(12) << ray_direction.z 
+            //               << std::setw(12) << angles.x
+            //               << std::setw(12) << angles.y
+            //               << std::endl;
+            // }
+
             glColor3f(color.r, color.g, color.b);
-            glVertex2f(pos_x, pos_y);
+            glVertex2f(pos_x, -pos_y);
         }
     }
 

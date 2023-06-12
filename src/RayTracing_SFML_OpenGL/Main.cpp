@@ -36,7 +36,13 @@ int main()
 
         if (key_hit(sf::Keyboard::Escape))
             window_storage.shutdown();
-        
+
+        if (key_hit(sf::Keyboard::R))
+        {
+            window_storage.get_camera().origin = { 0.f, 0.f, 0.f };
+            window_storage.get_camera().angles = { 0.f, 0.f };
+        }
+
         if (key_hit(sf::Keyboard::LAlt))
             capture_IO = !capture_IO;
 
@@ -72,9 +78,12 @@ int main()
 
         ImGui::Begin("Information");
 
-        ImGui::Text("Camera X %.1f", window_storage.get_camera().origin.x);
-        ImGui::Text("Camera Y %.1f", window_storage.get_camera().origin.y);
-        ImGui::Text("Camera Z %.1f", window_storage.get_camera().origin.z);
+        ImGui::Text("Camera X: %.1f", window_storage.get_camera().origin.x);
+        ImGui::Text("Camera Y: %.1f", window_storage.get_camera().origin.y);
+        ImGui::Text("Camera Z: %.1f", window_storage.get_camera().origin.z);
+        ImGui::Text("");
+        ImGui::Text("Camera U: %.2f", window_storage.get_camera().angles.x);
+        ImGui::Text("Camera V: %.2f", window_storage.get_camera().angles.y);
         
         ImGui::End();
 
