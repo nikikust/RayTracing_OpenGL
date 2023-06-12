@@ -1,4 +1,5 @@
 #include <RayTracing_SFML_OpenGL/Tracer/Objects.h>
+#include <RayTracing_SFML_OpenGL/Tracer/Tracer.h>
 
 
 namespace tracer
@@ -10,7 +11,7 @@ namespace tracer
 
 	void Camera::move_forward(float a)
 	{
-		gears::LookAt ray_direction{std::sinf(angles.x) * std::cosf(angles.y), std::cosf(angles.x) * std::cosf(angles.y), std::sinf(angles.y)};
+		gears::LookAt ray_direction = glm::vec3{ 0.f, 1.f, 0.f } * tracer::rotate_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}
@@ -20,7 +21,7 @@ namespace tracer
 	}
 	void Camera::move_right(float a)
 	{
-		gears::LookAt ray_direction{std::sinf(angles.x + glm::half_pi<float>()) * std::cosf(angles.y), std::cosf(angles.x + glm::half_pi<float>()) * std::cosf(angles.y), std::sinf(angles.y)};
+		gears::LookAt ray_direction = glm::vec3{ 1.f, 0.f, 0.f } * tracer::rotate_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}
@@ -30,7 +31,7 @@ namespace tracer
 	}
 	void Camera::move_up(float a)
 	{
-		gears::LookAt ray_direction{std::sinf(angles.x) * std::cosf(angles.y + glm::half_pi<float>()), std::cosf(angles.x) * std::cosf(angles.y + glm::half_pi<float>()), std::sinf(angles.y + glm::half_pi<float>())};
+		gears::LookAt ray_direction = glm::vec3{ 0.f, 0.f, 1.f } * tracer::rotate_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}

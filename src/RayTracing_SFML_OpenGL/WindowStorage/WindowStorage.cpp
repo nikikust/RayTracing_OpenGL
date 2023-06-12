@@ -3,7 +3,7 @@
 
 WindowStorage::WindowStorage(const std::wstring& window_title)
 {
-    window_.create(sf::VideoMode(500u, 500u), window_title, sf::Style::Default, sf::ContextSettings(32));
+    window_.create(sf::VideoMode(1000u, 1000u), window_title, sf::Style::Default, sf::ContextSettings(32));
     // window_.setVerticalSyncEnabled(true);
     // window_.setFramerateLimit(60);
 
