@@ -44,27 +44,34 @@ namespace gears
 		return ImGui::CalcTextSize(text.c_str()).x + style.FramePadding.x * 2 + style.ItemSpacing.x;
 	}
 
-	// --- SFML
+	// --- GLWF
 
-	bool keyHit[sf::Keyboard::KeyCount] = { 0 };
+	bool mouseDown[GLFW_MOUSE_BUTTON_LAST] = { 0 };
+	bool keyDown[GLFW_KEY_LAST] = { 0 };
+	bool keyHit[GLFW_KEY_LAST] = { 0 };
+
 	bool ignore_input = false;
 
-	int mouse_down(const sf::Mouse::Button& B)
+	bool global_flags[2] = { 0 }; 
+		// 0 - Window Resized
+		// 1 - x
+
+	int mouse_down(int B)
 	{
 		if (ignore_input)
 			return false;
-		return sf::Mouse::isButtonPressed(B);
+		return mouseDown[B];
 	}
-	int key_down(const sf::Keyboard::Key& B)
+	int key_down(int B)
 	{
 		if (ignore_input)
 			return false;
-		return sf::Keyboard::isKeyPressed(B);
+		return keyDown[B];
 	}
-	int key_hit(const sf::Keyboard::Key& key)
+	int key_hit(int key)
 	{
 		if (!keyHit[key]) {
-			if (sf::Keyboard::isKeyPressed(key)) {
+			if (keyDown[key]) {
 				keyHit[key] = true;
 				if (!ignore_input)
 					return true;
@@ -72,4 +79,30 @@ namespace gears
 		}
 		return false;
 	}
+
+	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		switch (action)
+		{
+		case GLFW_PRESS:   keyDown[key] = true;                       break;
+		case GLFW_RELEASE: keyDown[key] = false; keyHit[key] = false; break;
+		default:                                                      break;
+		}
+	}
+	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+		switch (action)
+		{
+		case GLFW_PRESS:   mouseDown[button] = true;  break;
+		case GLFW_RELEASE: mouseDown[button] = false; break;
+		default:                                      break;
+		}
+	}
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		global_flags[0] = true;
+
+		glViewport(0, 0, width, height);
+	}
+
 } // namespace gears

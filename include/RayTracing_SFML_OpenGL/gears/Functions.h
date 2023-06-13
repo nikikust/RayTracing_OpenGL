@@ -1,11 +1,15 @@
 #pragma once
 #include <imgui.h>
-#include <imgui-SFML.h>
+#include <imgui_impl_glfw.h>
+#include "imgui_impl_opengl3.h"
 #include <imgui_stdlib.h>
 #include <imgui_internal.h>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
+//#include <SFML/Graphics.hpp>
+//#include <SFML/OpenGL.hpp>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/common.hpp>
@@ -37,16 +41,23 @@ namespace gears
 	void SelectableColor(ImU32 color);
 	float get_button_width(const std::string& text, ImGuiStyle& style);
 
-	// --- SFML
+	// --- GLFW
 
+	extern bool mouseDown[];
+	extern bool keyDown[];
 	extern bool keyHit[];
+
 	extern bool ignore_input;
 
-	int mouse_down(const sf::Mouse::Button& B);
-	int key_down(const sf::Keyboard::Key& B);
-	int key_hit(const sf::Keyboard::Key& key);
+	extern bool global_flags[];
 
+	int mouse_down(int B);
+	int key_down(int B);
+	int key_hit(int key);
 	
+	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 	// --- OpenGL
 

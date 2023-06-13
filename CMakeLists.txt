@@ -4,6 +4,8 @@ project(RayTracing_SFML_OpenGL LANGUAGES CXX)
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_CXX_STANDARD 20)
 
+file(COPY shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY misc DESTINATION ${CMAKE_BINARY_DIR})
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -16,9 +18,9 @@ include_directories(include)
 find_package(Threads REQUIRED)
 
 find_package(imgui CONFIG REQUIRED)
-find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
-find_package(ImGui-SFML CONFIG REQUIRED)
 
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
 
 
 add_library(gears STATIC
@@ -26,8 +28,8 @@ add_library(gears STATIC
 )
 target_link_libraries(gears
     imgui::imgui
-    sfml-graphics sfml-system sfml-window
-    ImGui-SFML::ImGui-SFML
+    glfw
+    glad::glad
 )
 
 
@@ -39,8 +41,8 @@ add_library(Core STATIC
 target_link_libraries(Core
     gears
     imgui::imgui
-    sfml-graphics sfml-system sfml-window
-    ImGui-SFML::ImGui-SFML
+    glfw
+    glad::glad
 )
 
 
