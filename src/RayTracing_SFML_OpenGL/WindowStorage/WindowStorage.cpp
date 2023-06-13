@@ -7,7 +7,8 @@ WindowStorage::WindowStorage(const std::wstring& window_title)
     // window_.setVerticalSyncEnabled(true);
     // window_.setFramerateLimit(60);
 
-    screen_ratio = (float)window_.getSize().x / (float)window_.getSize().y;
+    screen_size = window_.getSize();
+    screen_ratio = (float)screen_size.x / (float)screen_size.y;
 
     if (!font_.loadFromFile("cyrillic.ttf"))
     {
@@ -43,7 +44,8 @@ void WindowStorage::pollEvents()
             window_.setView(sf::View(visibleArea));
             window_.popGLStates();
 
-            screen_ratio = (float)window_.getSize().x / (float)window_.getSize().y; }
+            screen_size = window_.getSize();
+            screen_ratio = (float)screen_size.x / (float)screen_size.y; }
             break;
         case sf::Event::KeyReleased:
             gears::keyHit[event.key.code] = false;
@@ -69,7 +71,8 @@ void WindowStorage::ImGui_init()
 }
 void WindowStorage::ImGui_update()
 {
-    ImGui::SFML::Update(window_, deltaClock_.restart());
+    time_elapsed_ = deltaClock_.restart();
+    ImGui::SFML::Update(window_, time_elapsed_);
 }
 void WindowStorage::ImGui_render()
 {
@@ -100,7 +103,11 @@ void WindowStorage::window_flip()
 
 sf::Vector2u WindowStorage::get_view_area()
 {
-    return window_.getSize();
+    return screen_size;
+}
+sf::Time WindowStorage::get_frame_elapsed_time()
+{
+    return time_elapsed_;
 }
 
 void WindowStorage::render_view()
@@ -110,12 +117,12 @@ void WindowStorage::render_view()
     glm::vec2 size{ window_.getSize().x, window_.getSize().y };
 
     window_.setActive(true);
-
+    
     glBegin(GL_POINTS);
-
+    
     auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
     float focus_distance = 1.f / std::tanf(vFOV_half);
-
+    
     for (int y = 0; y < size.y; ++y)
     {
         for (int x = 0; x < size.x; ++x)
@@ -128,12 +135,12 @@ void WindowStorage::render_view()
                 focus_distance,
                 -pos_y
             };
-
+            
             ray_direction = ray_direction * rotator;
-
+    
             // gears::Angles angles = { camera.angles.x + pos_x * hFOV_half, 
             //                          camera.angles.y + pos_y * vFOV_half };
-
+            // 
             // gears::LookAt ray_direction{
             //     std::sinf(angles.x) * std::cosf(angles.y), 
             //     std::cosf(angles.x) * std::cosf(angles.y), 
@@ -146,7 +153,7 @@ void WindowStorage::render_view()
                     glm::normalize(ray_direction)
                 }
             );
-
+    
             // if (x == 0 && y%100 == 0 || x == size.x - 1 && y % 100 == 0)
             // {
             //     std::cout << std::setw( 6) << x
@@ -158,12 +165,13 @@ void WindowStorage::render_view()
             //               << std::setw(12) << angles.y
             //               << std::endl;
             // }
-
+            // gears::Color color {0.3f, 0.6f, 1.0f, 1.0f};
+    
             glColor3f(color.r, color.g, color.b);
             glVertex2f(pos_x, -pos_y);
         }
     }
-
+    
     glEnd();
 
     window_.setActive(false);
@@ -196,4 +204,3 @@ void WindowStorage::show_mouse()
 {
     window_.setMouseCursorVisible(true);
 }
-

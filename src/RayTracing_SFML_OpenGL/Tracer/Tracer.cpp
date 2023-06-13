@@ -11,10 +11,12 @@ namespace tracer
 
     // --- Data
 
-    tracer::Sphere sphere_1 {{ 55.f,  500.f,   55.f}, 25.f, { 0.5f, 0.0f, 0.0f, 1.f }};
-    tracer::Sphere sphere_2 {{  0.f,  500.f,   55.f}, 25.f, { 1.0f, 1.0f, 1.0f, 1.f }};
-    tracer::Sphere sphere_3 {{  0.f,  500.f,    0.f}, 25.f, { 0.5f, 0.5f, 0.5f, 1.f }};
-    tracer::Sphere sphere_4 {{  0.f,    0.f, -500.f}, 25.f, { 0.0f, 0.0f, 1.0f, 1.f }};
+    std::vector<tracer::Sphere> spheres{
+        tracer::Sphere{{ 55.f, 500.f, 55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f, 55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f,  0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
+        tracer::Sphere{{  0.f, 0.f, -500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
+    };
 
     // --- //
 
@@ -23,35 +25,31 @@ namespace tracer
         if (ray.reflections > max_reflections)
             return { 0.f, 0.f, 0.f, 1.f };
 
-        if (auto intr = sphere_intersection(ray, sphere_1))
-        {
-            auto my_color = gears::Color
-            { 
-                0.5f + 0.5f * (intr.value().normal.x),
-                0.5f + 0.5f * (intr.value().normal.z),
-                0.5f - 0.5f * (intr.value().normal.y),
-                1.f};
+        float min_hit_distance = FLT_MAX;
+        gears::Color res_color = sky_intersection();
 
-            auto new_ray = reflect(ray, intr.value());
+        for (auto& sphere : spheres)
+        {
+            if (auto intr = sphere_intersection(ray, sphere))
+            {
+                float curr_distance = glm::length(intr.value().hit_origin - ray.origin);
+                if (curr_distance < min_hit_distance)
+                {
+                    auto diff = sphere.material.color * light_intensity(intr.value().normal);
+                    if (sphere.material.albedo == 0.f)
+                        res_color = diff;
+                    else
+                    {
+                        auto new_ray = reflect(ray, intr.value());
 
-            return my_color * 0.8f * light_intensity(intr.value().normal) + trace_ray(new_ray) * 0.2f;
-        }
-        if (auto intr = sphere_intersection(ray, sphere_2))
-        {
-            auto new_ray = reflect(ray, intr.value());
-            
-            return sphere_2.color * 0.5f * light_intensity(intr.value().normal) + trace_ray(new_ray) * 0.5f;
-        }
-        if (auto intr = sphere_intersection(ray, sphere_3))
-        {
-            return sphere_3.color * light_intensity(intr.value().normal);
-        }
-        if (auto intr = sphere_intersection(ray, sphere_4))
-        {
-            return sphere_4.color * light_intensity(intr.value().normal);
+                        res_color = glm::mix(diff, trace_ray(new_ray), sphere.material.albedo);
+                    }
+                    min_hit_distance = curr_distance;
+                }
+            }
         }
 
-        return sky_intersection();
+        return res_color;
     }
 
     glm::mat3 rotate_matrix(float angle_Z, float angle_X)

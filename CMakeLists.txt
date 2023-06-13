@@ -20,6 +20,7 @@ find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 find_package(ImGui-SFML CONFIG REQUIRED)
 
 
+
 add_library(gears STATIC
     src/RayTracing_SFML_OpenGL/gears/Functions.cpp
 )

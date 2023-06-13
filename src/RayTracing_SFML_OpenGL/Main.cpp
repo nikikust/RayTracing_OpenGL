@@ -14,7 +14,7 @@ int main()
     sf::Vector2i last_mouse_position{ sf::Mouse::getPosition() };
 
     bool capture_IO = false;
-    float moving_speed = 4.f;
+    float moving_speed = 0.1f;
 
     // --- Main Loop --- //
 
@@ -54,18 +54,20 @@ int main()
             window_storage.hide_mouse();
             window_storage.get_camera().rotate(mouse_position_delta.x / 250.f, mouse_position_delta.y / -250.f);
 
+            float delta_speed = moving_speed * window_storage.get_frame_elapsed_time().asMilliseconds();
+
             if (key_down(sf::Keyboard::Space))
-                window_storage.get_camera().move_up(moving_speed);
+                window_storage.get_camera().move_up(delta_speed);
             if (key_down(sf::Keyboard::LControl))
-                window_storage.get_camera().move_down(moving_speed);
+                window_storage.get_camera().move_down(delta_speed);
             if (key_down(sf::Keyboard::W))
-                window_storage.get_camera().move_forward(moving_speed);
+                window_storage.get_camera().move_forward(delta_speed);
             if (key_down(sf::Keyboard::S))
-                window_storage.get_camera().move_backward(moving_speed);
+                window_storage.get_camera().move_backward(delta_speed);
             if (key_down(sf::Keyboard::D))
-                window_storage.get_camera().move_right(moving_speed);
+                window_storage.get_camera().move_right(delta_speed);
             if (key_down(sf::Keyboard::A))
-                window_storage.get_camera().move_left(moving_speed);
+                window_storage.get_camera().move_left(delta_speed);
         }
         else
         {

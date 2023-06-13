@@ -33,6 +33,7 @@ public:
     void render_view();
 
     sf::Vector2u get_view_area();
+    sf::Time get_frame_elapsed_time();
 
     // --- IO
 
@@ -43,8 +44,13 @@ public:
     void show_mouse();
 
 private:
+    // --- Internal data
+
     sf::RenderWindow window_;
     sf::Clock deltaClock_;
+    sf::Time time_elapsed_;
+
+    sf::Vector2u screen_size;
 
     bool running_ = true;
 

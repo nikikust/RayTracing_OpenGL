@@ -1,6 +1,6 @@
 #pragma once
 #include <optional>
-
+#include <vector>
 
 #include <RayTracing_SFML_OpenGL/gears/Functions.h>
 #include <RayTracing_SFML_OpenGL/Tracer/Objects.h>

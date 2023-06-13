@@ -26,8 +26,18 @@ namespace tracer
 
 		uint32_t reflections;
 
-		Ray(const gears::Origin& origin, const gears::LookAt& direction, const gears::Color& color = { 0.f, 0.f, 0.f, 1.f }, const uint32_t& reflections = 0)
-			: origin(origin), direction(direction), color(color), reflections(reflections) {}
+		Ray(const gears::Origin& origin, const gears::LookAt& direction, 
+			const gears::Color& color = {0.f, 0.f, 0.f, 1.f },
+			const uint32_t& reflections = 0)
+			: origin(origin), direction(direction),
+			  color(color), reflections(reflections) {}
+	};
+
+	struct Material
+	{
+		float albedo;
+
+		gears::Color color;
 	};
 
 	struct Sphere
@@ -35,7 +45,7 @@ namespace tracer
 		gears::Origin position;
 		float radius;
 
-		gears::Color color;
+		Material material;
 	};
 
 } // namespace tracer
