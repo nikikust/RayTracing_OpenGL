@@ -137,15 +137,6 @@ void WindowStorage::render_view()
             };
             
             ray_direction = ray_direction * rotator;
-    
-            // gears::Angles angles = { camera.angles.x + pos_x * hFOV_half, 
-            //                          camera.angles.y + pos_y * vFOV_half };
-            // 
-            // gears::LookAt ray_direction{
-            //     std::sinf(angles.x) * std::cosf(angles.y), 
-            //     std::cosf(angles.x) * std::cosf(angles.y), 
-            //     std::sinf(angles.y)
-            // };
             
             auto color = tracer::trace_ray(
                 tracer::Ray{
@@ -153,19 +144,6 @@ void WindowStorage::render_view()
                     glm::normalize(ray_direction)
                 }
             );
-    
-            // if (x == 0 && y%100 == 0 || x == size.x - 1 && y % 100 == 0)
-            // {
-            //     std::cout << std::setw( 6) << x
-            //               << std::setw( 6) << y
-            //               << std::setw(12) << ray_direction.x
-            //               << std::setw(12) << ray_direction.y
-            //               << std::setw(12) << ray_direction.z 
-            //               << std::setw(12) << angles.x
-            //               << std::setw(12) << angles.y
-            //               << std::endl;
-            // }
-            // gears::Color color {0.3f, 0.6f, 1.0f, 1.0f};
     
             glColor3f(color.r, color.g, color.b);
             glVertex2f(pos_x, -pos_y);

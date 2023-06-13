@@ -17,7 +17,6 @@
 
 #include <cstddef>
 #include <iostream>
-// #include <iomanip>
 
 
 namespace gears
