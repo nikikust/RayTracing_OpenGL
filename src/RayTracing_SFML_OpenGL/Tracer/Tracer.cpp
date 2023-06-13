@@ -7,6 +7,8 @@ namespace tracer
 
     uint32_t max_reflections = 2;
 
+    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 0.f, -1.f });
+
     // --- Data
 
     tracer::Sphere sphere_1 {{ 55.f,  500.f,   55.f}, 25.f, { 0.5f, 0.0f, 0.0f, 1.f }};
@@ -23,28 +25,30 @@ namespace tracer
 
         if (auto intr = sphere_intersection(ray, sphere_1))
         {
-            auto point_on_sphere = glm::normalize(intr.value() - sphere_1.position);
-            auto my_color = gears::Color{ 0.5f + 0.5f * (point_on_sphere.x), 0.5f + 0.5f * (point_on_sphere.z), 0.5f - 0.5f * (point_on_sphere.y) , 1.f };
+            auto my_color = gears::Color
+            { 
+                0.5f + 0.5f * (intr.value().normal.x),
+                0.5f + 0.5f * (intr.value().normal.z),
+                0.5f - 0.5f * (intr.value().normal.y),
+                1.f};
 
-            if (auto new_ray = reflect_from_sphere(ray, sphere_1))
-                return my_color * 0.8f + trace_ray(new_ray.value()) * 0.2f;
+            auto new_ray = reflect(ray, intr.value());
+
+            return my_color * 0.8f * light_intensity(intr.value().normal) + trace_ray(new_ray) * 0.2f;
         }
         if (auto intr = sphere_intersection(ray, sphere_2))
         {
-            // auto intr = glm::normalize(sphere_intersection(ray, sphere_2) - sphere_2.position);
-
-            // return { 0.0f, 0.5f + 0.5f * (intr.z), 0.f , 1.f };
-
-            if (auto new_ray = reflect_from_sphere(ray, sphere_2))
-                return sphere_2.color * 0.5f + trace_ray(new_ray.value()) * 0.5f;
+            auto new_ray = reflect(ray, intr.value());
+            
+            return sphere_2.color * 0.5f * light_intensity(intr.value().normal) + trace_ray(new_ray) * 0.5f;
         }
         if (auto intr = sphere_intersection(ray, sphere_3))
         {
-            return sphere_3.color;
+            return sphere_3.color * light_intensity(intr.value().normal);
         }
         if (auto intr = sphere_intersection(ray, sphere_4))
         {
-            return sphere_4.color;
+            return sphere_4.color * light_intensity(intr.value().normal);
         }
 
         return sky_intersection();
@@ -77,6 +81,10 @@ namespace tracer
     {
         return { 100.f / 255, 150.f / 255, 200.f / 255, 1.f };
     }
+    float light_intensity(gears::LookAt normal)
+    {
+        return glm::dot(normal, -sun_angle) / 2.f + 0.5f;
+    }
 
     bool intersects_sphere(const Ray& ray, const Sphere& sphere)
     {
@@ -96,40 +104,36 @@ namespace tracer
         }
         return false;
     }
-    std::optional<Ray> reflect_from_sphere(Ray ray, const Sphere& sphere)
+    Ray reflect(Ray ray, const HitInfo& hit_info)
     {
         ++ray.reflections;
 
-        auto touch_point = sphere_intersection(ray, sphere);
+        ray.direction = glm::normalize(glm::reflect(ray.direction, hit_info.normal));
 
-        if (!touch_point)
-            return std::nullopt;
-
-        glm::vec3 normal = glm::normalize(touch_point.value() - sphere.position);
-
-        ray.direction = glm::normalize(glm::reflect(ray.direction, normal));
-
-        ray.origin = touch_point.value() + ray.direction * 0.1f;
+        ray.origin = hit_info.hit_origin + ray.direction * 0.1f;
         
         return ray;
     }
-    std::optional<gears::Origin> sphere_intersection(const Ray& ray, const Sphere& sphere)
+    std::optional<HitInfo> sphere_intersection(const Ray& ray, const Sphere& sphere)
     {
         auto distance = ray.origin - sphere.position;
 
-        float b = 2 * glm::dot(ray.direction, distance);
-        float c = glm::length(distance) * glm::length(distance) - sphere.radius * sphere.radius;
-        float delta = b * b - 4 * c;
+        float b = glm::dot(ray.direction, distance);
+        float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;
+        float delta = b * b - c;
 
         if (delta > 0)
         {
-            float t1 = (-b + sqrtf(delta)) / 2.f;
-            float t2 = (-b - sqrtf(delta)) / 2.f;
+            float t1 = -b + sqrtf(delta);
+            float t2 = -b - sqrtf(delta);
 
             if (t1 > 0 && t2 > 0)
-                return ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
-        }
+            {
+                auto touch_point = ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
 
+                return HitInfo{ touch_point, glm::normalize(touch_point - sphere.position) };
+            }
+        }
         return std::nullopt;
     }
 

@@ -78,6 +78,8 @@ int main()
 
         ImGui::Begin("Information");
 
+        ImGui::Text("Screen resolution: %ix%i", screen_size.x, screen_size.y);
+        ImGui::Text("");
         ImGui::Text("Camera X: %.1f", window_storage.get_camera().origin.x);
         ImGui::Text("Camera Y: %.1f", window_storage.get_camera().origin.y);
         ImGui::Text("Camera Z: %.1f", window_storage.get_camera().origin.z);

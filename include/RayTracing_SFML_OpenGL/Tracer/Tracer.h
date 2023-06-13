@@ -8,13 +8,20 @@
 
 namespace tracer
 {
+	struct HitInfo
+	{
+		gears::Origin hit_origin;
+		gears::LookAt normal;
+	};
+
 	gears::Color trace_ray(const Ray& ray);
 	glm::mat3 rotate_matrix(float angle_Z, float angle_X);
 
 	gears::Color sky_intersection();
+	float light_intensity(gears::LookAt normal);
 
 	bool intersects_sphere(const Ray& ray, const Sphere& sphere);
-	std::optional<Ray> reflect_from_sphere(Ray ray, const Sphere& sphere);
-	std::optional<gears::Origin> sphere_intersection(const Ray& ray, const Sphere& sphere);
+	Ray reflect(Ray ray, const HitInfo& hit_info);
+	std::optional<HitInfo> sphere_intersection(const Ray& ray, const Sphere& sphere);
 
 };
