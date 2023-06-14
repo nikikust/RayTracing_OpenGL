@@ -12,10 +12,10 @@ namespace tracer
     // --- Data
 
     std::vector<tracer::Sphere> spheres{
-        tracer::Sphere{{ 55.f, 500.f, 55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f, 55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f,  0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
-        tracer::Sphere{{  0.f, 0.f, -500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
+        tracer::Sphere{{ 55.f, 500.f,  55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f,  55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f,   0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
+        tracer::Sphere{{  0.f, 0.f,   500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
     };
 
     // --- //
@@ -26,7 +26,7 @@ namespace tracer
             return { 0.f, 0.f, 0.f, 1.f };
 
         float min_hit_distance = FLT_MAX;
-        gears::Color res_color = sky_intersection();
+        gears::Color res_color = sky_intersection(ray);
 
         for (auto& sphere : spheres)
         {
@@ -75,8 +75,10 @@ namespace tracer
     }
 
 
-    gears::Color sky_intersection()
+    gears::Color sky_intersection(const Ray& ray)
     {
+        if (glm::dot(-sun_angle, ray.direction) > 0.999f)
+            return { 255.f / 255, 255.f / 255, 200.f / 255, 1.f };
         return { 100.f / 255, 150.f / 255, 200.f / 255, 1.f };
     }
     float light_intensity(gears::LookAt normal)

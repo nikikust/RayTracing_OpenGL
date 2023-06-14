@@ -27,7 +27,7 @@ namespace tracer
 		uint32_t reflections;
 
 		Ray(const gears::Origin& origin, const gears::LookAt& direction, 
-			const gears::Color& color = {0.f, 0.f, 0.f, 1.f },
+			const gears::Color& color = {1.f, 1.f, 1.f, 1.f },
 			const uint32_t& reflections = 0)
 			: origin(origin), direction(direction),
 			  color(color), reflections(reflections) {}

@@ -17,7 +17,7 @@ namespace tracer
 	gears::Color trace_ray(const Ray& ray);
 	glm::mat3 rotate_matrix(float angle_Z, float angle_X);
 
-	gears::Color sky_intersection();
+	gears::Color sky_intersection(const Ray& ray);
 	float light_intensity(gears::LookAt normal);
 
 	bool intersects_sphere(const Ray& ray, const Sphere& sphere);
