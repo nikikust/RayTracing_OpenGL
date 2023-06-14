@@ -3,41 +3,32 @@
 
 WindowStorage::WindowStorage(const std::string& window_title)
 {
-    int glfw_initiated = glfwInit();
-    if (glfw_initiated != GLFW_TRUE)
-    {
-        printf("GLFW initialization failed");
-    }
+    init_GLFW();
 
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
-    window_ = glfwCreateWindow(1920, 1080, window_title.c_str(), nullptr, nullptr);
+    create_GLFW_window(window_title);
     
-    if (window_ == NULL)
-    {
-        printf("Failed to create GLFW window\n");
-    }
+    init_GLAD();
 
-    glfwMakeContextCurrent(window_);
-    glfwSwapInterval(1);
-    
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        printf("Failed to initialize GLAD\n");
-    }
-    
-    gears::global_flags[0] = true;
+    prepare_buffers();
 
-    glfwSetKeyCallback(window_, gears::key_callback);
-    glfwSetMouseButtonCallback(window_, gears::mouse_button_callback);
-    glfwSetFramebufferSizeCallback(window_, gears::framebuffer_size_callback);
+    on_resize(true);
+
+    prepare_shaders();
+
+    prepare_callbacks();
+
+    init_ImGui();
 
     lastTime = glfwGetTime();
     deltaTime = 0;
 }
+WindowStorage::~WindowStorage()
+{
+    delete[] OpenGL_data_.dotPositions;
+    delete[] OpenGL_data_.dotColors;
+}
 
+// --- //
 
 void WindowStorage::close_window()
 {
@@ -54,70 +45,19 @@ void WindowStorage::pollEvents()
 
     if (gears::global_flags[0] == true)
     {
-        glfwGetFramebufferSize(window_, &screen_size.x, &screen_size.y);
-
-        screen_ratio = (float)screen_size.x / (float)screen_size.y;
-
-        glViewport(0, 0, screen_size.x, screen_size.y);
-
-        m_ImageHorizontalIter.resize(screen_size.x);
-        m_ImageVerticalIter.resize(screen_size.y);
-        for (int i = 0; i < screen_size.x; i++)
-            m_ImageHorizontalIter[i] = i;
-        for (int i = 0; i < screen_size.y; i++)
-            m_ImageVerticalIter[i] = i;
+        on_resize();
+        gears::global_flags[0] = 0;
     }
 
     double nowTime = glfwGetTime();
-    double deltaTime = nowTime - lastTime;
+    deltaTime = nowTime - lastTime;
     lastTime = nowTime;
-
-    // sf::Event event;
-    // while (window_.pollEvent(event))
-    // {
-    //     ImGui::SFML::ProcessEvent(event);
-    // 
-    //     switch (event.type) {
-    //     case sf::Event::Closed:
-    //         running_ = false;
-    //         break;
-    //     case sf::Event::Resized: {
-    //         window_.setActive(true);
-    //         glViewport(0, 0, event.size.width, event.size.height);
-    //         window_.setActive(false);
-    // 
-    //         window_.pushGLStates();
-    //         sf::FloatRect visibleArea(0.f, 0.f,
-    //             static_cast<float>(event.size.width),
-    //             static_cast<float>(event.size.height));
-    //         window_.setView(sf::View(visibleArea));
-    //         window_.popGLStates();
-    // 
-    //         screen_size = window_.getSize();
-    //         screen_ratio = (float)screen_size.x / (float)screen_size.y; }
-    //         break;
-    //     case sf::Event::KeyReleased:
-    //         gears::keyHit[event.key.code] = false;
-    //         break;
-    //     default:
-    //         break;
-    //     }
-    // }
 }
 bool WindowStorage::isRunning()
 {
     return !glfwWindowShouldClose(window_);
 }
 
-void WindowStorage::ImGui_init()
-{
-    ImGui::CreateContext();
-
-    ImGui_ImplGlfw_InitForOpenGL(window_, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-}
 void WindowStorage::ImGui_update()
 {
     ImGui_ImplOpenGL3_NewFrame();
@@ -159,7 +99,7 @@ double WindowStorage::get_frame_elapsed_time()
     return deltaTime * 1000;
 }
 
-void WindowStorage::render_view()
+void WindowStorage::update()
 {
     // --- Ray Tracing
 
@@ -167,8 +107,6 @@ void WindowStorage::render_view()
     
     auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
     float focus_distance = 1.f / std::tanf(vFOV_half);
-    
-    glBegin(GL_POINTS);
 
     std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
         [this, size, &rotator, focus_distance](int y)
@@ -194,15 +132,40 @@ void WindowStorage::render_view()
                         }
                     );
 
-                    // glColor3f(color.r, color.g, color.b);
-                    // glVertex3f(pos_x, -pos_y, 0);
+                    this->OpenGL_data_.dotPositions[(y * (int)size.x + x) * 2 + 0] =  pos_x;
+                    this->OpenGL_data_.dotPositions[(y * (int)size.x + x) * 2 + 1] = -pos_y;
+
+                    this->OpenGL_data_.   dotColors[(y * (int)size.x + x) * 4 + 0] = color.r;
+                    this->OpenGL_data_.   dotColors[(y * (int)size.x + x) * 4 + 1] = color.g;
+                    this->OpenGL_data_.   dotColors[(y * (int)size.x + x) * 4 + 2] = color.b;
+                    this->OpenGL_data_.   dotColors[(y * (int)size.x + x) * 4 + 3] = color.a;
                 }
             );
         }
     );
-    
-    glEnd();
+
+    glBindBuffer(GL_ARRAY_BUFFER, OpenGL_data_.dotVBO);
+    glBufferData(GL_ARRAY_BUFFER, OpenGL_data_.size_of_dotPositions + OpenGL_data_.size_of_dotColors, NULL, GL_DYNAMIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0,                                 OpenGL_data_.size_of_dotPositions, OpenGL_data_.dotPositions);
+    glBufferSubData(GL_ARRAY_BUFFER, OpenGL_data_.size_of_dotPositions, OpenGL_data_.size_of_dotColors,    OpenGL_data_.dotColors);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+void WindowStorage::render_view()
+{
+    // Use shader program
+    glUseProgram(OpenGL_data_.shader_program);
+
+    // Bind VAO
+    glBindVertexArray(OpenGL_data_.dotVAO);
+
+    // Draw points
+    glDrawArrays(GL_POINTS, 0, (GLsizei)(OpenGL_data_.size_of_dotPositions / sizeof(float) / 2));
+}
+
+// --- //
 
 tracer::Camera& WindowStorage::get_camera()
 {
@@ -247,4 +210,129 @@ void WindowStorage::process_inputs()
         camera.move_right(delta_speed);
     if (gears::key_down(GLFW_KEY_A))
         camera.move_left(delta_speed);
+}
+
+// --- Init methods
+
+void WindowStorage::init_GLFW()
+{
+    if (glfwInit() != GLFW_TRUE)
+        std::cout << "GLFW initialization failed" << std::endl;
+    else
+        std::cout << "GLFW initialized" << std::endl;
+}
+void WindowStorage::create_GLFW_window(const std::string& window_title)
+{
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
+    window_ = glfwCreateWindow(1920, 1080, window_title.c_str(), nullptr, nullptr);
+
+    if (window_ == NULL)
+        std::cout << "GLFW window creation failed" << std::endl;
+    else
+        std::cout << "GLFW window created" << std::endl;
+
+    glfwMakeContextCurrent(window_);
+    glfwSwapInterval(1);
+}
+void WindowStorage::init_GLAD()
+{
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        std::cout << "GLAD initialization failed" << std::endl;
+    else
+        std::cout << "GLAD initialized" << std::endl;
+}
+void WindowStorage::prepare_buffers()
+{
+    glGenBuffers(1, &OpenGL_data_.dotVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, OpenGL_data_.dotVBO);
+
+    glGenVertexArrays(1, &OpenGL_data_.dotVAO);
+    glBindVertexArray(OpenGL_data_.dotVAO);
+}
+void WindowStorage::prepare_shaders()
+{
+    // --- Compile shaders
+    auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    auto vertex_shader_source = gears::load_shader_text("shaders/shader.vert");
+
+    const char* vs = vertex_shader_source.c_str();
+    glShaderSource(vertex_shader, 1, &vs, NULL);
+    glCompileShader(vertex_shader);
+
+    auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    auto fragment_shader_source = gears::load_shader_text("shaders/shader.frag");
+
+    const char* fs = fragment_shader_source.c_str();
+    glShaderSource(fragment_shader, 1, &fs, NULL);
+    glCompileShader(fragment_shader);
+
+    // --- Create shader program
+    OpenGL_data_.shader_program = glCreateProgram();
+    glAttachShader(OpenGL_data_.shader_program, vertex_shader);
+    glAttachShader(OpenGL_data_.shader_program, fragment_shader);
+    glLinkProgram(OpenGL_data_.shader_program);
+
+    // --- Delete shaders
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
+}
+void WindowStorage::prepare_callbacks()
+{
+    glfwSetKeyCallback(window_, gears::key_callback);
+    glfwSetMouseButtonCallback(window_, gears::mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window_, gears::framebuffer_size_callback);
+}
+void WindowStorage::init_ImGui()
+{
+    ImGui::CreateContext();
+
+    ImGui_ImplGlfw_InitForOpenGL(window_, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+}
+
+// --- Event methods
+
+void WindowStorage::on_resize(bool init)
+{
+    // --- Update render area size
+    glfwGetFramebufferSize(window_, &screen_size.x, &screen_size.y);
+
+    // --- Update screen ratio
+    screen_ratio = (float)screen_size.x / (float)screen_size.y;
+
+    // --- Resize viewport
+    glViewport(0, 0, screen_size.x, screen_size.y);
+
+    // --- Update ray tracing boundaries
+    m_ImageHorizontalIter.resize(screen_size.x);
+    m_ImageVerticalIter.resize(screen_size.y);
+    for (int i = 0; i < screen_size.x; i++)
+        m_ImageHorizontalIter[i] = i;
+    for (int i = 0; i < screen_size.y; i++)
+        m_ImageVerticalIter[i] = i;
+
+    // --- Realloc frame buffer
+    if (!init)
+    {
+        delete[] OpenGL_data_.dotPositions;
+        delete[] OpenGL_data_.dotColors;
+    }
+
+    OpenGL_data_.dotPositions = new float[screen_size.x * screen_size.y * 2];
+    OpenGL_data_.dotColors    = new float[screen_size.x * screen_size.y * 4];
+
+    OpenGL_data_.size_of_dotPositions = 2 * sizeof(float) * screen_size.x * screen_size.y;
+    OpenGL_data_.size_of_dotColors    = 4 * sizeof(float) * screen_size.x * screen_size.y;
+    
+    // --- Recalculate OpenGL buffer pointers
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)(0));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)(OpenGL_data_.size_of_dotPositions));
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 }

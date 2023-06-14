@@ -11,6 +11,7 @@ class WindowStorage
 {
 public:
     WindowStorage(const std::string& window_title);
+    ~WindowStorage();
 
     WindowStorage() = delete;
     WindowStorage(WindowStorage& other) = delete;
@@ -19,12 +20,13 @@ public:
     bool operator=(const WindowStorage& other) const = delete;
     bool operator=(const WindowStorage&& other) const = delete;
 
+    // --- //
+
     void close_window();
     void shutdown();
     void pollEvents();
     bool isRunning();
 
-    void ImGui_init();
     void ImGui_update();
     void ImGui_render();
     void ImGui_shutdown();
@@ -34,6 +36,7 @@ public:
     void window_cls();
     void window_flip();
 
+    void update();
     void render_view();
 
     glm::ivec2 get_view_area();
@@ -52,6 +55,16 @@ public:
     void process_inputs();
 
 private:
+    void init_GLFW();
+    void create_GLFW_window(const std::string& window_title);
+    void init_GLAD();
+    void prepare_buffers();
+    void prepare_shaders();
+    void prepare_callbacks();
+    void init_ImGui();
+
+    void on_resize(bool init = false);
+
     // --- Internal data
 
     GLFWwindow* window_;
@@ -69,4 +82,16 @@ private:
     float moving_speed = 0.1f;
 
     std::vector<int> m_ImageHorizontalIter, m_ImageVerticalIter;
+
+    struct OpenGL_data
+    {
+        GLuint dotVAO;                 // for shader
+        GLuint dotVBO;                 //
+        GLfloat* dotPositions;         // 
+        GLfloat* dotColors;            //
+        GLintptr size_of_dotPositions; // for VBO
+        GLintptr size_of_dotColors;    // 
+
+        unsigned int shader_program;
+    } OpenGL_data_;
 };

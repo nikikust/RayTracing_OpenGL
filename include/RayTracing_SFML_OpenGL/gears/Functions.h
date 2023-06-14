@@ -5,9 +5,6 @@
 #include <imgui_stdlib.h>
 #include <imgui_internal.h>
 
-//#include <SFML/Graphics.hpp>
-//#include <SFML/OpenGL.hpp>
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -20,6 +17,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <cstddef>
+#include <fstream>
 #include <iostream>
 
 
@@ -68,8 +66,10 @@ namespace gears
 
 	struct Vertex
 	{
-		Origin pos;
+		glm::vec2 pos;
 		Color color;
 	};
+
+	std::string load_shader_text(const std::string& path);
 
 } // namespace gears

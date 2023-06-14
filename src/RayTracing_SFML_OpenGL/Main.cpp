@@ -9,7 +9,6 @@ int main()
     using namespace gears;
 
     WindowStorage window_storage("Ray Tracing");
-    window_storage.ImGui_init();
 
     bool capture_IO = false;
 
@@ -31,45 +30,49 @@ int main()
 
         // --- Logic
 
+        window_storage.update();
+
+        // --- IO
+
         glm::ivec2 current_mouse_position{ window_storage.get_mouse_pos() };
         glm::ivec2 mouse_position_delta = current_mouse_position - last_mouse_position;
         last_mouse_position = current_mouse_position;
-        
+
         auto screen_size = window_storage.get_view_area();
-        
+
         if (key_hit(GLFW_KEY_ESCAPE))
             window_storage.close_window();
-        
+
         if (key_hit(GLFW_KEY_R))
         {
             window_storage.get_camera().origin = { 0.f, 0.f, 0.f };
             window_storage.get_camera().angles = { 0.f, 0.f };
         }
-        
+
         if (key_hit(GLFW_KEY_LEFT_ALT))
             capture_IO = !capture_IO;
-        
+
         if (capture_IO)
         {
             window_storage.set_cursor_position({ screen_size.x / 2, screen_size.y / 2 });
             current_mouse_position = { window_storage.get_mouse_pos() };
-        
+
             window_storage.hide_mouse();
             window_storage.get_camera().rotate(mouse_position_delta.x / 250.f, mouse_position_delta.y / -250.f);
-        
+
             window_storage.process_inputs();
         }
         else
         {
             window_storage.show_mouse();
         }
-        
+
         last_mouse_position = current_mouse_position;
-        
+
         // --- Windows
-        
+
         ImGui::Begin("Information");
-        
+
         ImGui::Text("Screen resolution: %ix%i", screen_size.x, screen_size.y);
         ImGui::Separator();
         ImGui::Text("Camera X: %.1f", window_storage.get_camera().origin.x);
@@ -80,7 +83,7 @@ int main()
         ImGui::Text("Camera V: %.2f", window_storage.get_camera().angles.y);
         ImGui::Separator();
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-        
+
         ImGui::End();
 
         // --- Render

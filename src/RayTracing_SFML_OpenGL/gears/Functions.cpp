@@ -105,4 +105,13 @@ namespace gears
 		glViewport(0, 0, width, height);
 	}
 
+	// --- OpenGL
+
+	std::string load_shader_text(const std::string& path)
+	{
+		std::ifstream in{ path };
+
+		return { std::istreambuf_iterator<char>{ in }, std::istreambuf_iterator<char>{} };
+	}
+
 } // namespace gears
