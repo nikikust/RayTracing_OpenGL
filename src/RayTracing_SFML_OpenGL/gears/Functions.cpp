@@ -56,19 +56,19 @@ namespace gears
 		// 0 - Window Resized
 		// 1 - x
 
-	int mouse_down(int B)
+	bool mouse_down(int B)
 	{
 		if (ignore_input)
 			return false;
 		return mouseDown[B];
 	}
-	int key_down(int B)
+	bool key_down(int B)
 	{
 		if (ignore_input)
 			return false;
 		return keyDown[B];
 	}
-	int key_hit(int key)
+	bool key_hit(int key)
 	{
 		if (!keyHit[key]) {
 			if (keyDown[key]) {

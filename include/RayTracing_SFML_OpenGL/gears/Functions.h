@@ -49,9 +49,9 @@ namespace gears
 
 	extern bool global_flags[];
 
-	int mouse_down(int B);
-	int key_down(int B);
-	int key_hit(int key);
+	bool mouse_down(int B);
+	bool key_down(int B);
+	bool key_hit(int key);
 	
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);

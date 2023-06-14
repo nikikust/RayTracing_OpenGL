@@ -30,6 +30,9 @@ int main()
 
         // --- Logic
 
+        if (capture_IO)
+            window_storage.hide_mouse();
+
         window_storage.update();
 
         // --- IO
@@ -58,7 +61,7 @@ int main()
             current_mouse_position = { window_storage.get_mouse_pos() };
 
             window_storage.hide_mouse();
-            window_storage.get_camera().rotate(mouse_position_delta.x / 250.f, mouse_position_delta.y / -250.f);
+            window_storage.get_camera().rotate(mouse_position_delta.x / 500.f, mouse_position_delta.y / -500.f);
 
             window_storage.process_inputs();
         }

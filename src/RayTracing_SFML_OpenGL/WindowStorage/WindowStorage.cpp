@@ -108,10 +108,10 @@ void WindowStorage::update()
     auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
     float focus_distance = 1.f / std::tanf(vFOV_half);
 
-    std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
+    std::for_each(std::execution::par_unseq, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
         [this, size, &rotator, focus_distance](int y)
         {
-            std::for_each(std::execution::par, m_ImageHorizontalIter.begin(), m_ImageHorizontalIter.end(),
+            std::for_each(std::execution::par_unseq, m_ImageHorizontalIter.begin(), m_ImageHorizontalIter.end(),
             [this, y, size, &rotator, focus_distance](int x)
                 {
                     float pos_x = 2.f * x / size.x - 1.f;
@@ -196,7 +196,9 @@ glm::ivec2 WindowStorage::get_mouse_pos()
 
 void WindowStorage::process_inputs()
 {
-    float delta_speed = float(moving_speed * get_frame_elapsed_time());
+    float delta_speed = (float)
+        (get_frame_elapsed_time() * moving_speed *
+            (gears::key_down(GLFW_KEY_LEFT_SHIFT) ? 2.f : 1.f));
 
     if (gears::key_down(GLFW_KEY_SPACE))
         camera.move_up(delta_speed);
@@ -227,7 +229,7 @@ void WindowStorage::create_GLFW_window(const std::string& window_title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-    window_ = glfwCreateWindow(1920, 1080, window_title.c_str(), nullptr, nullptr);
+    window_ = glfwCreateWindow(1980, 1080, window_title.c_str(), nullptr, nullptr);
 
     if (window_ == NULL)
         std::cout << "GLFW window creation failed" << std::endl;
@@ -330,9 +332,13 @@ void WindowStorage::on_resize(bool init)
     OpenGL_data_.size_of_dotColors    = 4 * sizeof(float) * screen_size.x * screen_size.y;
     
     // --- Recalculate OpenGL buffer pointers
+    glBindBuffer(GL_ARRAY_BUFFER, OpenGL_data_.dotVBO);
+
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)(0));
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)(OpenGL_data_.size_of_dotPositions));
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
