@@ -1,4 +1,6 @@
 #pragma once
+#include <execution>
+#include <algorithm>
 #include <string>
 
 #include <RayTracing_SFML_OpenGL/gears/Functions.h>
@@ -9,6 +11,7 @@ class WindowStorage
 {
 public:
     WindowStorage(const std::wstring& window_title);
+    ~WindowStorage();
 
     WindowStorage() = delete;
     WindowStorage(WindowStorage& other) = delete;
@@ -62,4 +65,8 @@ private:
 
     float vFOV_half = 50.f / 2.f * (glm::pi<float>() / 180.f);
     float screen_ratio;
+
+    std::vector<int> m_ImageHorizontalIter, m_ImageVerticalIter;
+
+    gears::Vertex* frame_buffer_;
 };

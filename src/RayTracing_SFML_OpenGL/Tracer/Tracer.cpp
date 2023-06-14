@@ -9,14 +9,24 @@ namespace tracer
 
     gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 0.f, -1.f });
 
+    float a = 0;
+
     // --- Data
 
     std::vector<tracer::Sphere> spheres{
-        tracer::Sphere{{ 55.f, 500.f, 55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f, 55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f,  0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
-        tracer::Sphere{{  0.f, 0.f, -500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
+        tracer::Sphere{{ 55.f, 500.f,   55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f,   55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
+        tracer::Sphere{{  0.f, 500.f,    0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
+        tracer::Sphere{{  0.f,   0.f, -500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
     };
+
+    // --- //
+
+    void rotate_sun()
+    {
+        a += 0.02f;
+        sun_angle = glm::normalize(gears::LookAt{  sin(a), cos(a), -1.f });
+    }
 
     // --- //
 

@@ -57,7 +57,7 @@ namespace gears
 
 	struct Vertex
 	{
-		Origin pos;
+		glm::vec2 pos;
 		Color color;
 	};
 

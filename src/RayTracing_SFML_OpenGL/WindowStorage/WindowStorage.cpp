@@ -10,10 +10,24 @@ WindowStorage::WindowStorage(const std::wstring& window_title)
     screen_size = window_.getSize();
     screen_ratio = (float)screen_size.x / (float)screen_size.y;
 
+    m_ImageHorizontalIter.resize(screen_size.x);
+    m_ImageVerticalIter.resize(screen_size.y);
+    for (unsigned int i = 0; i < screen_size.x; i++)
+        m_ImageHorizontalIter[i] = i;
+    for (unsigned int i = 0; i < screen_size.y; i++)
+        m_ImageVerticalIter[i] = i;
+
+    frame_buffer_ = new gears::Vertex[screen_size.x * screen_size.y];
+
     if (!font_.loadFromFile("cyrillic.ttf"))
     {
         std::cout << "Can't load font!" << std::endl;
     }
+}
+
+WindowStorage::~WindowStorage()
+{
+    delete[] frame_buffer_;
 }
 
 
@@ -45,7 +59,19 @@ void WindowStorage::pollEvents()
             window_.popGLStates();
 
             screen_size = window_.getSize();
-            screen_ratio = (float)screen_size.x / (float)screen_size.y; }
+            screen_ratio = (float)screen_size.x / (float)screen_size.y;
+
+            m_ImageHorizontalIter.resize(screen_size.x);
+            m_ImageVerticalIter.resize(screen_size.y);
+            for (unsigned int i = 0; i < screen_size.x; i++)
+                m_ImageHorizontalIter[i] = i;
+            for (unsigned int i = 0; i < screen_size.y; i++)
+                m_ImageVerticalIter[i] = i; 
+
+            delete[] frame_buffer_;
+            frame_buffer_ = new gears::Vertex[screen_size.x * screen_size.y];
+
+            }
             break;
         case sf::Event::KeyReleased:
             gears::keyHit[event.key.code] = false;
@@ -113,41 +139,53 @@ sf::Time WindowStorage::get_frame_elapsed_time()
 void WindowStorage::render_view()
 {
     // --- Ray Tracing
+    tracer::rotate_sun();
 
     glm::vec2 size{ window_.getSize().x, window_.getSize().y };
-
-    window_.setActive(true);
-    
-    glBegin(GL_POINTS);
     
     auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
     float focus_distance = 1.f / std::tanf(vFOV_half);
-    
-    for (int y = 0; y < size.y; ++y)
-    {
-        for (int x = 0; x < size.x; ++x)
+
+    std::for_each(std::execution::par, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
+        [this, size, &rotator, focus_distance](int y)
         {
-            float pos_x = 2.f * x / size.x - 1.f;
-            float pos_y = 2.f * y / size.y - 1.f;
+            std::for_each(std::execution::par, m_ImageHorizontalIter.begin(), m_ImageHorizontalIter.end(),
+            [this, y, size, &rotator, focus_distance](int x)
+                {
+                    float pos_x = 2.f * x / size.x - 1.f;
+                    float pos_y = 2.f * y / size.y - 1.f;
             
-            gears::LookAt ray_direction{
-                pos_x * screen_ratio,
-                focus_distance,
-                -pos_y
-            };
+                    gears::LookAt ray_direction{
+                        pos_x * screen_ratio,
+                        focus_distance,
+                        -pos_y
+                    };
             
-            ray_direction = ray_direction * rotator;
+                    ray_direction = ray_direction * rotator;
             
-            auto color = tracer::trace_ray(
-                tracer::Ray{
-                    camera.origin,
-                    glm::normalize(ray_direction)
+                    auto color = tracer::trace_ray(
+                        tracer::Ray{
+                            camera.origin,
+                            glm::normalize(ray_direction)
+                        }
+                    );
+
+                    this->frame_buffer_[y * (int)size.x + x].pos = { pos_x, pos_y };
+                    this->frame_buffer_[y * (int)size.x + x].color = color;
                 }
             );
-    
-            glColor3f(color.r, color.g, color.b);
-            glVertex2f(pos_x, -pos_y);
         }
+    );
+    
+    window_.setActive(true);
+
+    glBegin(GL_POINTS);
+
+    for (unsigned int i = 0; i < screen_size.x * screen_size.y; ++i)
+    {
+        auto point = frame_buffer_[i];
+        glColor3f(point.color.r, point.color.g, point.color.b);
+        glVertex2f(point.pos.x, -point.pos.y);
     }
     
     glEnd();

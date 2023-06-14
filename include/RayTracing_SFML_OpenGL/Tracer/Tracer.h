@@ -14,6 +14,8 @@ namespace tracer
 		gears::LookAt normal;
 	};
 
+	void rotate_sun();
+
 	gears::Color trace_ray(const Ray& ray);
 	glm::mat3 rotate_matrix(float angle_Z, float angle_X);
 
