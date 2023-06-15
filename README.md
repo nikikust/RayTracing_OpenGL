@@ -1,1 +1,3 @@
-# RayTracing SFML OpenGL
+# Трассировка лучей на базе OpenGL
+- Рассчёты проводятся на ЦП;
+- Вывод при помощи SFML(glBegin()/glVertex()).
