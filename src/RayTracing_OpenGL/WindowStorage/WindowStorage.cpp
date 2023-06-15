@@ -1,4 +1,4 @@
-#include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
+#include <RayTracing_OpenGL/WindowStorage/WindowStorage.h>
 
 
 WindowStorage::WindowStorage(std::wstring window_title)

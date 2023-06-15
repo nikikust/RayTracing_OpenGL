@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(RayTracing_SFML_OpenGL LANGUAGES CXX)
+project(RayTracing_OpenGL LANGUAGES CXX)
 
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -21,8 +21,8 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 
 
 add_library(gears STATIC
-    src/RayTracing_SFML_OpenGL/gears/Functions.cpp
-    src/RayTracing_SFML_OpenGL/gears/StaticThreadPool.cpp
+    src/RayTracing_OpenGL/gears/Functions.cpp
+    src/RayTracing_OpenGL/gears/StaticThreadPool.cpp
 )
 target_link_libraries(gears
     imgui::imgui
@@ -32,7 +32,7 @@ target_link_libraries(gears
 
 
 add_library(WindowStorage STATIC
-    src/RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.cpp
+    src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
 )
 target_link_libraries(WindowStorage
     gears
@@ -43,7 +43,7 @@ target_link_libraries(WindowStorage
 
 
 add_executable(${PROJECT_NAME}
-    src/RayTracing_SFML_OpenGL/main.cpp
+    src/RayTracing_OpenGL/main.cpp
 )
 target_link_libraries(${PROJECT_NAME}
     WindowStorage

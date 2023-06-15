@@ -1,4 +1,4 @@
-#include <RayTracing_SFML_OpenGL/gears/StaticThreadPool.hpp>
+#include <RayTracing_OpenGL/gears/StaticThreadPool.hpp>
 
 namespace gears
 {

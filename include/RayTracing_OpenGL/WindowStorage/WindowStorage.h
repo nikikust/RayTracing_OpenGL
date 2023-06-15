@@ -4,8 +4,8 @@
 #include <future>
 #include <array>
 
-#include <RayTracing_SFML_OpenGL/gears/Functions.h>
-#include <RayTracing_SFML_OpenGL/gears/StaticThreadPool.hpp>
+#include <RayTracing_OpenGL/gears/Functions.h>
+#include <RayTracing_OpenGL/gears/StaticThreadPool.hpp>
 
 #define THREADPOOL_SIZE 4
 
