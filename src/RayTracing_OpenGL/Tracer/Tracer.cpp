@@ -1,4 +1,4 @@
-#include <RayTracing_SFML_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/Tracer/Tracer.h>
 
 
 namespace tracer

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(RayTracing_SFML_OpenGL LANGUAGES CXX)
+project(RayTracing_OpenGL LANGUAGES CXX)
 
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_CXX_STANDARD 20)
@@ -22,7 +22,7 @@ find_package(ImGui-SFML CONFIG REQUIRED)
 
 
 add_library(gears STATIC
-    src/RayTracing_SFML_OpenGL/gears/Functions.cpp
+    src/RayTracing_OpenGL/gears/Functions.cpp
 )
 target_link_libraries(gears
     imgui::imgui
@@ -32,9 +32,9 @@ target_link_libraries(gears
 
 
 add_library(Core STATIC
-    src/RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.cpp
-    src/RayTracing_SFML_OpenGL/Tracer/Tracer.cpp
-    src/RayTracing_SFML_OpenGL/Tracer/Objects.cpp
+    src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
+    src/RayTracing_OpenGL/Tracer/Tracer.cpp
+    src/RayTracing_OpenGL/Tracer/Objects.cpp
 )
 target_link_libraries(Core
     gears
@@ -45,7 +45,7 @@ target_link_libraries(Core
 
 
 add_executable(${PROJECT_NAME}
-    src/RayTracing_SFML_OpenGL/main.cpp
+    src/RayTracing_OpenGL/main.cpp
 )
 target_link_libraries(${PROJECT_NAME}
     Core

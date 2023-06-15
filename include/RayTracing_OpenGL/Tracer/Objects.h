@@ -1,5 +1,5 @@
 #pragma once
-#include <RayTracing_SFML_OpenGL/gears/Functions.h>
+#include <RayTracing_OpenGL/gears/Functions.h>
 
 namespace tracer
 {
