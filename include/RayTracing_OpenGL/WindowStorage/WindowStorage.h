@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <string>
 
-#include <RayTracing_SFML_OpenGL/gears/Functions.h>
-#include <RayTracing_SFML_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/gears/Functions.h>
+#include <RayTracing_OpenGL/Tracer/Tracer.h>
 
 
 class WindowStorage

@@ -1,5 +1,5 @@
-#include <RayTracing_SFML_OpenGL/gears/Functions.h>
-#include <RayTracing_SFML_OpenGL/WindowStorage/WindowStorage.h>
+#include <RayTracing_OpenGL/gears/Functions.h>
+#include <RayTracing_OpenGL/WindowStorage/WindowStorage.h>
 
 
 int main()
