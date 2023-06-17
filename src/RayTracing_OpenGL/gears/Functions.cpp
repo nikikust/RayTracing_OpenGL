@@ -33,7 +33,7 @@ namespace gears
 		ImGui::SameLine();
 		return true;
 	}
-	void SelectableColor(ImU32 color)
+	void selectable_color(ImU32 color)
 	{
 		ImVec2 p_min = ImGui::GetItemRectMin();
 		ImVec2 p_max = ImGui::GetItemRectMax();
@@ -46,9 +46,9 @@ namespace gears
 
 	// --- GLWF
 
-	bool mouseDown[GLFW_MOUSE_BUTTON_LAST] = { 0 };
-	bool keyDown[GLFW_KEY_LAST] = { 0 };
-	bool keyHit[GLFW_KEY_LAST] = { 0 };
+	bool mouse_down_array[GLFW_MOUSE_BUTTON_LAST] = { 0 };
+	bool key_down_array[GLFW_KEY_LAST] = { 0 };
+	bool key_hit_array[GLFW_KEY_LAST] = { 0 };
 
 	bool ignore_input = false;
 
@@ -60,19 +60,19 @@ namespace gears
 	{
 		if (ignore_input)
 			return false;
-		return mouseDown[B];
+		return mouse_down_array[B];
 	}
 	bool key_down(int B)
 	{
 		if (ignore_input)
 			return false;
-		return keyDown[B];
+		return key_down_array[B];
 	}
 	bool key_hit(int key)
 	{
-		if (!keyHit[key]) {
-			if (keyDown[key]) {
-				keyHit[key] = true;
+		if (!key_hit_array[key]) {
+			if (key_down_array[key]) {
+				key_hit_array[key] = true;
 				if (!ignore_input)
 					return true;
 			}
@@ -84,8 +84,8 @@ namespace gears
 	{
 		switch (action)
 		{
-		case GLFW_PRESS:   keyDown[key] = true;                       break;
-		case GLFW_RELEASE: keyDown[key] = false; keyHit[key] = false; break;
+		case GLFW_PRESS:   key_down_array[key] = true;                       break;
+		case GLFW_RELEASE: key_down_array[key] = false; key_hit_array[key] = false; break;
 		default:                                                      break;
 		}
 	}
@@ -93,8 +93,8 @@ namespace gears
 	{
 		switch (action)
 		{
-		case GLFW_PRESS:   mouseDown[button] = true;  break;
-		case GLFW_RELEASE: mouseDown[button] = false; break;
+		case GLFW_PRESS:   mouse_down_array[button] = true;  break;
+		case GLFW_RELEASE: mouse_down_array[button] = false; break;
 		default:                                      break;
 		}
 	}

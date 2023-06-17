@@ -23,53 +23,49 @@
 
 namespace gears
 {
-	// --- ImGui
+    // --- ImGui
 
-	inline namespace literals
-	{
-		char const* operator"" _C(const char8_t* str, std::size_t);
-	}
+    inline namespace literals
+    {
+        char const* operator"" _C(const char8_t* str, std::size_t);
+    }
 
-	ImVec2 operator+(const ImVec2& left, const ImVec2& right);
-	ImVec2 operator-(const ImVec2& left, const ImVec2& right);
-	bool operator==(const ImVec2& left, const ImVec2& right);
-	bool operator!=(const ImVec2& left, const ImVec2& right);
+    ImVec2 operator+(const ImVec2& left, const ImVec2& right);
+    ImVec2 operator-(const ImVec2& left, const ImVec2& right);
+    bool operator==(const ImVec2& left, const ImVec2& right);
+    bool operator!=(const ImVec2& left, const ImVec2& right);
 
-	bool block();                           // ImGUI::Sameline(); && return true;
-	void SelectableColor(ImU32 color);
-	float get_button_width(const std::string& text, ImGuiStyle& style);
+    bool block();                           // ImGUI::Sameline(); && return true;
+    void selectable_color(ImU32 color);
+    float get_button_width(const std::string& text, ImGuiStyle& style);
 
-	// --- GLFW
+    // --- GLFW
 
-	extern bool mouseDown[];
-	extern bool keyDown[];
-	extern bool keyHit[];
+    extern bool ignore_input;
 
-	extern bool ignore_input;
+    extern bool global_flags[];
 
-	extern bool global_flags[];
+    bool mouse_down(int B);
+    bool key_down(int B);
+    bool key_hit(int key);
+    
+    void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+    void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-	bool mouse_down(int B);
-	bool key_down(int B);
-	bool key_hit(int key);
-	
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+    // --- OpenGL
 
-	// --- OpenGL
+    using Origin = glm::vec3;
+    using LookAt = glm::vec3;
+    using Angles = glm::vec2;
+    using Color  = glm::vec4;
 
-	using Origin = glm::vec3;
-	using LookAt = glm::vec3;
-	using Angles = glm::vec2;
-	using Color  = glm::vec4;
+    struct Vertex
+    {
+        glm::vec2 pos;
+        Color color;
+    };
 
-	struct Vertex
-	{
-		glm::vec2 pos;
-		Color color;
-	};
-
-	std::string load_shader_text(const std::string& path);
+    std::string load_shader_text(const std::string& path);
 
 } // namespace gears
