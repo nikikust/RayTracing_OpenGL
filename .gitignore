@@ -3,3 +3,6 @@
 out
 CMakePresets.json
 CMakeSettings.json
+
+# Standard cmake build directory
+.build

@@ -54,12 +54,12 @@ namespace tracer
 
     glm::mat3 rotate_matrix(float angle_Z, float angle_X)
     {
-        float su = std::sinf(angle_X);
-        float cu = std::cosf(angle_X);
-        float sv = std::sinf(0.f);
-        float cv = std::cosf(0.f);
-        float sw = std::sinf(-angle_Z);
-        float cw = std::cosf(-angle_Z);
+        float su = sinf(angle_X);
+        float cu = cosf(angle_X);
+        float sv = sinf(0.f);
+        float cv = cosf(0.f);
+        float sw = sinf(-angle_Z);
+        float cw = cosf(-angle_Z);
         
         return glm::mat3 {
             cv * cw,

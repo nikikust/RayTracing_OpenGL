@@ -106,7 +106,7 @@ void WindowStorage::update()
     glm::vec2 size{ get_view_area() };
     
     auto rotator = tracer::rotate_matrix(camera.angles.x, camera.angles.y);
-    float focus_distance = 1.f / std::tanf(vFOV_half);
+    float focus_distance = 1.f / tanf(vFOV_half);
 
     std::for_each(std::execution::par_unseq, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
         [this, size, &rotator, focus_distance](int y)
