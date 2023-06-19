@@ -1,4 +1,4 @@
-#include <RayTracing_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Tracer.h>
 
 
 namespace tracer
@@ -7,7 +7,7 @@ namespace tracer
 
     uint32_t max_reflections = 2;
 
-    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 0.f, -1.f });
+    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 1.f, -1.f });
 
     // --- Data
 
@@ -54,12 +54,12 @@ namespace tracer
 
     glm::mat3 rotate_matrix(float angle_Z, float angle_X)
     {
-        float su = std::sinf(angle_X);
-        float cu = std::cosf(angle_X);
-        float sv = std::sinf(0.f);
-        float cv = std::cosf(0.f);
-        float sw = std::sinf(-angle_Z);
-        float cw = std::cosf(-angle_Z);
+        float su = sinf(angle_X);
+        float cu = cosf(angle_X);
+        float sv = sinf(0.f);
+        float cv = cosf(0.f);
+        float sw = sinf(-angle_Z);
+        float cw = cosf(-angle_Z);
         
         return glm::mat3 {
             cv * cw,
@@ -83,7 +83,7 @@ namespace tracer
     }
     float light_intensity(gears::LookAt normal)
     {
-        return glm::dot(normal, -sun_angle) / 2.f + 0.5f;
+        return glm::max(glm::dot(normal, -sun_angle), 0.f); // / 2.f + 0.5f;
     }
 
     bool intersects_sphere(const Ray& ray, const Sphere& sphere)
@@ -116,7 +116,7 @@ namespace tracer
     }
     std::optional<HitInfo> sphere_intersection(const Ray& ray, const Sphere& sphere)
     {
-        auto distance = ray.origin - sphere.position;
+        gears::Origin distance = ray.origin - sphere.position;
 
         float b = glm::dot(ray.direction, distance);
         float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;

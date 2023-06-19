@@ -3,7 +3,7 @@
 #include <vector>
 
 #include <RayTracing_OpenGL/gears/Functions.h>
-#include <RayTracing_OpenGL/Tracer/Objects.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Objects.h>
 
 
 namespace tracer

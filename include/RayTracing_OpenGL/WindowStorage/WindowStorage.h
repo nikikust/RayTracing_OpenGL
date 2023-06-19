@@ -4,7 +4,7 @@
 #include <string>
 
 #include <RayTracing_OpenGL/gears/Functions.h>
-#include <RayTracing_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Tracer.h>
 
 
 class WindowStorage

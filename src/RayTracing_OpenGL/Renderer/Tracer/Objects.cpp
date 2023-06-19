@@ -1,5 +1,5 @@
-#include <RayTracing_OpenGL/Tracer/Objects.h>
-#include <RayTracing_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Objects.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Tracer.h>
 
 
 namespace tracer
