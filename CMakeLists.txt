@@ -74,7 +74,6 @@ target_link_libraries(interface
 
 add_library(Core STATIC
     src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
-
 )
 target_link_libraries(Core
     gears

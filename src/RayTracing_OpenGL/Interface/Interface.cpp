@@ -33,7 +33,7 @@ void Interface::update()
 #ifdef WIN32
     ImGui::Separator();
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-#endif
+#endif // WIN32
 
     ImGui::End();
 }

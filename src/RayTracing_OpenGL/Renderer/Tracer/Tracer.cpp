@@ -30,7 +30,11 @@ namespace tracer
     {
         if (is_sun)
             return { 255.f / 255, 255.f / 255, 200.f / 255, 1.f };
-        return { 100.f / 255, 150.f / 255, 200.f / 255, 1.f };
+
+        glm::vec4 zenith_color { .4f, .6f, .8f, 1.f };
+        glm::vec4 horizon_color{ 1.f, 1.f, 1.f, 1.f};
+
+        return glm::mix(horizon_color, zenith_color, sqrtf(abs(ray.direction.z)));
     }
     float light_intensity(gears::LookAt normal, gears::LookAt sun_direction)
     {
