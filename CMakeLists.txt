@@ -36,7 +36,7 @@ target_link_libraries(gears
 )
 
 add_library(data_storage STATIC
-    src/RayTracing_OpenGL/DataStorage/DataStorage.cpp>
+    src/RayTracing_OpenGL/DataStorage/DataStorage.cpp
 )
 target_link_libraries(data_storage
     gears
@@ -53,7 +53,7 @@ target_link_libraries(window
 
 
 add_library(renderer STATIC
-    src/RayTracing_OpenGL/Renderer/Renderer.cpp>
+    src/RayTracing_OpenGL/Renderer/Renderer.cpp
     src/RayTracing_OpenGL/Renderer/Tracer/Tracer.cpp
     src/RayTracing_OpenGL/Renderer/Tracer/Objects.cpp
 )
