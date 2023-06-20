@@ -30,8 +30,10 @@ void Interface::update()
     ImGui::Separator();
     ImGui::Text("Camera U: %.2f", data_storage_.camera.angles.x);
     ImGui::Text("Camera V: %.2f", data_storage_.camera.angles.y);
+#ifdef WIN32
     ImGui::Separator();
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+#endif // WIN32
 
     ImGui::End();
 }
