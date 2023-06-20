@@ -35,19 +35,53 @@ target_link_libraries(gears
     glm
 )
 
+add_library(data_storage STATIC
+    src/RayTracing_OpenGL/DataStorage/DataStorage.cpp>
+)
+target_link_libraries(data_storage
+    gears
+)
+
+
+add_library(window STATIC
+    src/RayTracing_OpenGL/Window/Window.cpp
+)
+target_link_libraries(window
+    gears
+    data_storage
+)
+
+
+add_library(renderer STATIC
+    src/RayTracing_OpenGL/Renderer/Renderer.cpp>
+    src/RayTracing_OpenGL/Renderer/Tracer/Tracer.cpp
+    src/RayTracing_OpenGL/Renderer/Tracer/Objects.cpp
+)
+target_link_libraries(renderer
+    gears
+    data_storage
+)
+
+
+add_library(interface STATIC
+    src/RayTracing_OpenGL/Interface/Interface.cpp
+)
+target_link_libraries(interface
+    gears
+    data_storage
+)
+
 
 add_library(Core STATIC
     src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
-    src/RayTracing_OpenGL/Tracer/Tracer.cpp
-    src/RayTracing_OpenGL/Tracer/Objects.cpp
+
 )
 target_link_libraries(Core
     gears
-    imgui
-    stb
-    glfw
-    glad
-    glm
+    window
+    renderer
+    interface
+    data_storage
 )
 
 

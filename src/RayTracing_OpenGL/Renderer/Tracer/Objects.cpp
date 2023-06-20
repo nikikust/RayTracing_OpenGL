@@ -1,5 +1,5 @@
-#include <RayTracing_OpenGL/Tracer/Objects.h>
-#include <RayTracing_OpenGL/Tracer/Tracer.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Objects.h>
+#include <RayTracing_OpenGL/Renderer/Tracer/Tracer.h>
 
 
 namespace tracer
@@ -11,7 +11,7 @@ namespace tracer
 
 	void Camera::move_forward(float a)
 	{
-		gears::LookAt ray_direction = glm::vec3{ 0.f, 1.f, 0.f } * tracer::rotate_matrix(angles.x, angles.y);
+		gears::LookAt ray_direction = glm::vec3{ 0.f, 1.f, 0.f } * tracer::rotation_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}
@@ -21,7 +21,7 @@ namespace tracer
 	}
 	void Camera::move_right(float a)
 	{
-		gears::LookAt ray_direction = glm::vec3{ 1.f, 0.f, 0.f } * tracer::rotate_matrix(angles.x, angles.y);
+		gears::LookAt ray_direction = glm::vec3{ 1.f, 0.f, 0.f } * tracer::rotation_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}
@@ -31,7 +31,7 @@ namespace tracer
 	}
 	void Camera::move_up(float a)
 	{
-		gears::LookAt ray_direction = glm::vec3{ 0.f, 0.f, 1.f } * tracer::rotate_matrix(angles.x, angles.y);
+		gears::LookAt ray_direction = glm::vec3{ 0.f, 0.f, 1.f } * tracer::rotation_matrix(angles.x, angles.y);
 
 		origin += glm::normalize(ray_direction) * a;
 	}

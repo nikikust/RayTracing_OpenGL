@@ -6,3 +6,6 @@ CMakeSettings.json
 
 # Standard cmake build directory
 .build
+
+# ImGui file
+imgui.ini
