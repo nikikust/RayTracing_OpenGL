@@ -3,56 +3,7 @@
 
 namespace tracer
 {
-    // --- Config
-
-    uint32_t max_reflections = 2;
-
-    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 1.f, -1.f });
-
-    // --- Data
-
-    std::vector<tracer::Sphere> spheres{
-        tracer::Sphere{{ 55.f, 500.f,  55.f}, 25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f,  55.f}, 25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{  0.f, 500.f,   0.f}, 25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
-        tracer::Sphere{{  0.f, 0.f,   500.f}, 25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }}
-    };
-
-    // --- //
-
-    gears::Color trace_ray(const Ray& ray)
-    {
-        if (ray.reflections > max_reflections)
-            return { 0.f, 0.f, 0.f, 1.f };
-
-        float min_hit_distance = FLT_MAX;
-        gears::Color res_color = sky_intersection(ray);
-
-        for (auto& sphere : spheres)
-        {
-            if (auto intr = sphere_intersection(ray, sphere))
-            {
-                float curr_distance = glm::length(intr.value().hit_origin - ray.origin);
-                if (curr_distance < min_hit_distance)
-                {
-                    auto diff = sphere.material.color * light_intensity(intr.value().normal);
-                    if (sphere.material.albedo == 0.f)
-                        res_color = diff;
-                    else
-                    {
-                        auto new_ray = reflect(ray, intr.value());
-
-                        res_color = glm::mix(diff, trace_ray(new_ray), sphere.material.albedo);
-                    }
-                    min_hit_distance = curr_distance;
-                }
-            }
-        }
-
-        return res_color;
-    }
-
-    glm::mat3 rotate_matrix(float angle_Z, float angle_X)
+    glm::mat3 rotation_matrix(float angle_Z, float angle_X)
     {
         float su = sinf(angle_X);
         float cu = cosf(angle_X);
@@ -75,15 +26,15 @@ namespace tracer
     }
 
 
-    gears::Color sky_intersection(const Ray& ray)
+    gears::Color sky_intersection(const Ray& ray, bool is_sun)
     {
-        if (glm::dot(-sun_angle, ray.direction) > 0.999f)
+        if (is_sun)
             return { 255.f / 255, 255.f / 255, 200.f / 255, 1.f };
         return { 100.f / 255, 150.f / 255, 200.f / 255, 1.f };
     }
-    float light_intensity(gears::LookAt normal)
+    float light_intensity(gears::LookAt normal, gears::LookAt sun_direction)
     {
-        return glm::max(glm::dot(normal, -sun_angle), 0.f); // / 2.f + 0.5f;
+        return glm::max(glm::dot(normal, -sun_direction), 0.f); // / 2.f + 0.5f;
     }
 
     bool intersects_sphere(const Ray& ray, const Sphere& sphere)
@@ -137,4 +88,4 @@ namespace tracer
         return std::nullopt;
     }
 
-} // namespace Tracer
+} // namespace tracer

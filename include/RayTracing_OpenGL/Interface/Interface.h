@@ -10,15 +10,17 @@ public:
 	Interface(Interface&) = delete;
 	Interface(Interface&&) = delete;
 
+	~Interface();
+
 	// --- //
 
+	void update();
+	void draw();
+
+private:
 	void init();
 	void shutdown();
 
-	void update();
-	void show();
-
-private:
 	DataStorage& data_storage_;
 
 };

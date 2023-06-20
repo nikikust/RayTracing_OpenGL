@@ -15,8 +15,6 @@ endif()
 include_directories(include)
 
 
-find_package(Threads REQUIRED)
-
 find_package(imgui CONFIG REQUIRED)
 
 find_package(glfw3 CONFIG REQUIRED)
@@ -32,17 +30,53 @@ target_link_libraries(gears
     glad::glad
 )
 
+add_library(data_storage STATIC
+    src/RayTracing_OpenGL/DataStorage/DataStorage.cpp>
+)
+target_link_libraries(data_storage
+    gears
+)
 
-add_library(Core STATIC
-    src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
+
+add_library(window STATIC
+    src/RayTracing_OpenGL/Window/Window.cpp
+)
+target_link_libraries(window
+    gears
+    data_storage
+)
+
+
+add_library(renderer STATIC
+    src/RayTracing_OpenGL/Renderer/Renderer.cpp>
     src/RayTracing_OpenGL/Renderer/Tracer/Tracer.cpp
     src/RayTracing_OpenGL/Renderer/Tracer/Objects.cpp
 )
+target_link_libraries(renderer
+    gears
+    data_storage
+)
+
+
+add_library(interface STATIC
+    src/RayTracing_OpenGL/Interface/Interface.cpp
+)
+target_link_libraries(interface
+    gears
+    data_storage
+)
+
+
+add_library(Core STATIC
+    src/RayTracing_OpenGL/WindowStorage/WindowStorage.cpp
+
+)
 target_link_libraries(Core
     gears
-    imgui::imgui
-    glfw
-    glad::glad
+    window
+    renderer
+    interface
+    data_storage
 )
 
 
@@ -54,4 +88,6 @@ target_link_libraries(${PROJECT_NAME}
     ${CMAKE_THREAD_LIBS_INIT}
     ${CMAKE_DL_LIBS}
 )
+
+
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/PROFILE")
