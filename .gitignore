@@ -3,3 +3,6 @@
 out
 CMakePresets.json
 CMakeSettings.json
+
+# ImGui file
+imgui.ini
