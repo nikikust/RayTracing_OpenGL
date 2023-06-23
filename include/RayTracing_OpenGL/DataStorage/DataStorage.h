@@ -37,6 +37,8 @@ public:
     uint32_t max_reflections = 2;
 
     gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.f, 1.f, -1.f });
+    gears::Color zenith_color { .4f, .6f, .8f, 1.f };
+    gears::Color horizon_color{ 1.f, 1.f, 1.f, 1.f};
 
     // --- Objects data
 

@@ -23,17 +23,6 @@ void Renderer::update()
     GLint sizeUniform = glGetUniformLocation(shader_program, "spheres_amount");
     glUniform1i(sizeUniform, (GLint)data_storage_.spheres.size());
 
-    // - Screen
-    GLint resolution_uniform = glGetUniformLocation(shader_program, "resolution");
-    glUniform2f(resolution_uniform, (float)data_storage_.screen_size.x, (float)data_storage_.screen_size.y);
-
-    GLint screen_ratio_uniform = glGetUniformLocation(shader_program, "screen_ratio");
-    glUniform1f(screen_ratio_uniform, data_storage_.screen_ratio);
-
-    float focus_distance = 1.f / tanf(data_storage_.vFOV_half);
-    GLint focus_distance_uniform = glGetUniformLocation(shader_program, "focus_distance");
-    glUniform1f(focus_distance_uniform, focus_distance);
-
     // - Scene info
     GLint sun_direction_uniform = glGetUniformLocation(shader_program, "sun_direction");
     glUniform3fv(sun_direction_uniform, 1, glm::value_ptr(data_storage_.sun_direction));
@@ -55,37 +44,19 @@ void Renderer::draw()
 
 void Renderer::on_resize(bool init)
 {
-    // --- Update ray tracing boundaries
-    // m_ImageHorizontalIter.resize(data_storage_.screen_size.x);
-    // m_ImageVerticalIter.resize(data_storage_.screen_size.y);
-    // for (int i = 0; i < data_storage_.screen_size.x; i++)
-    //     m_ImageHorizontalIter[i] = i;
-    // for (int i = 0; i < data_storage_.screen_size.y; i++)
-    //     m_ImageVerticalIter[i] = i;
-    //
-    // --- Realloc frame buffer
-    // if (!init)
-    // {
-    //     delete[] dotPositions;
-    //     delete[] dotColors;
-    // }
-    //
-    // dotPositions = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 2];
-    // dotColors    = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 4];
-    // 
-    // size_of_dotPositions = 2 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
-    // size_of_dotColors    = 4 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
-    //
-    // --- Recalculate OpenGL buffer pointers
-    // glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
-    // 
-    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)(0));
-    // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)(size_of_dotPositions));
-    // 
-    // glEnableVertexAttribArray(0);
-    // glEnableVertexAttribArray(1);
-    // 
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glUseProgram(shader_program);
+
+    // - Screen
+
+    GLint resolution_uniform = glGetUniformLocation(shader_program, "resolution");
+    glUniform2f(resolution_uniform, (float)data_storage_.screen_size.x, (float)data_storage_.screen_size.y);
+
+    GLint screen_ratio_uniform = glGetUniformLocation(shader_program, "screen_ratio");
+    glUniform1f(screen_ratio_uniform, data_storage_.screen_ratio);
+
+    float focus_distance = 1.f / tanf(data_storage_.vFOV_half);
+    GLint focus_distance_uniform = glGetUniformLocation(shader_program, "focus_distance");
+    glUniform1f(focus_distance_uniform, focus_distance);
 }
 
 
