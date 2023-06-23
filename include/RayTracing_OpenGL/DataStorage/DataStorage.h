@@ -45,6 +45,6 @@ public:
         tracer::Sphere{{   0.f,  500.f,    55.f},   25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
         tracer::Sphere{{   0.f,  500.f,     0.f},   25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
         tracer::Sphere{{   0.f,    0.f,   500.f},   25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{   0.f,  500.f, -5025.f}, 5000.f, { 0.05f, { 0.0f, 0.5f, 0.0f, 1.f } }}
+        tracer::Sphere{{   0.f,  500.f, -5025.f}, 5000.f, { 0.00f, { 0.0f, 0.5f, 0.0f, 1.f } }}
     };
 };
