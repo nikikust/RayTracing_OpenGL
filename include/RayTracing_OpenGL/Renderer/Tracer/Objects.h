@@ -4,49 +4,49 @@
 
 namespace tracer
 {
-	struct Camera
-	{
-		gears::Origin origin;
-		gears::Angles angles;
+    struct Camera
+    {
+        gears::Origin origin;
+        gears::Angles angles;
 
-		void rotate(float x, float y);
+        void rotate(float x, float y);
 
-		void move_forward(float a);
-		void move_backward(float a);
-		void move_left(float a);
-		void move_right(float a);
-		void move_up(float a);
-		void move_down(float a);
-	};
+        void move_forward(float a);
+        void move_backward(float a);
+        void move_left(float a);
+        void move_right(float a);
+        void move_up(float a);
+        void move_down(float a);
+    };
 
-	struct Ray
-	{
-		gears::Origin origin;
-		gears::LookAt direction;
-		gears::Color color;
+    struct Ray
+    {
+        gears::Origin origin;
+        gears::LookAt direction;
+        gears::Color color;
 
-		uint32_t reflections;
+        uint32_t reflections;
 
-		Ray(const gears::Origin& origin, const gears::LookAt& direction, 
-			const gears::Color& color = {1.f, 1.f, 1.f, 1.f },
-			const uint32_t& reflections = 0)
-			: origin(origin), direction(direction),
-			  color(color), reflections(reflections) {}
-	};
+        Ray(const gears::Origin& origin, const gears::LookAt& direction, 
+            const gears::Color& color = {1.f, 1.f, 1.f, 1.f },
+            const uint32_t& reflections = 0)
+            : origin(origin), direction(direction),
+              color(color), reflections(reflections) {}
+    };
 
-	struct Material
-	{
-		float albedo;
+    struct Material
+    {
+        float albedo;
 
-		gears::Color color;
-	};
+        gears::Color color;
+    };
 
-	struct Sphere
-	{
-		gears::Origin position;
-		float radius;
+    struct Sphere
+    {
+        gears::Origin position;
+        float radius;
 
-		Material material;
-	};
+        Material material;
+    };
 
 } // namespace tracer

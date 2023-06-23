@@ -3,6 +3,6 @@
 
 DataStorage::DataStorage()
 {
-	lastTime = glfwGetTime();
-	deltaTime = 0;
+    lastTime = glfwGetTime();
+    deltaTime = 0;
 }
