@@ -31,14 +31,8 @@ private:
 
     DataStorage& data_storage_;
     
-    GLuint shader_program;         //
-    GLuint id_VAO;                 // for shader
-    GLuint id_VBO;                 //
-    GLuint id_UBO;                 //
-    // GLfloat* dotPositions;         // 
-    // GLfloat* dotColors;            //
-    // GLintptr size_of_dotPositions; // for VBO
-    // GLintptr size_of_dotColors;    // 
-    // 
-    // std::vector<int> m_ImageHorizontalIter, m_ImageVerticalIter;
+    GLuint shader_program; //
+    GLuint id_VAO;         // for shader
+    GLuint id_VBO;         //
+    GLuint id_UBO;         //
 };

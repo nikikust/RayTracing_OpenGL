@@ -36,7 +36,7 @@ public:
 
     uint32_t max_reflections = 2;
 
-    gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.f, 1.f, 1.f });
+    gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.f, 1.f, -1.f });
 
     // --- Objects data
 

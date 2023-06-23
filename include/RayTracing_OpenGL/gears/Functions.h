@@ -60,12 +60,6 @@ namespace gears
     using Angles = glm::vec2;
     using Color  = glm::vec4;
 
-    struct Vertex
-    {
-        glm::vec2 pos;
-        Color color;
-    };
-
     std::string load_shader_text(const std::string& path);
 
 } // namespace gears
