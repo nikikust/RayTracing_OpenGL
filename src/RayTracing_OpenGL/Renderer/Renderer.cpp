@@ -2,7 +2,7 @@
 
 
 Renderer::Renderer(DataStorage& data_storage)
-	: data_storage_(data_storage)
+    : data_storage_(data_storage)
 {
     prepare_buffers();
     prepare_shaders();
