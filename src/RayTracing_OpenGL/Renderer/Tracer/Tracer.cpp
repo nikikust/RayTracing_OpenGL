@@ -43,20 +43,20 @@ namespace tracer
 
     bool intersects_sphere(const Ray& ray, const Sphere& sphere)
     {
-        auto distance = ray.origin - sphere.position;
-
-        float b = glm::dot(ray.direction, distance);
-        float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;
-        float delta = b * b - c;
-
-        if (delta > 0)
-        {
-            float t1 = -b + sqrtf(delta);
-            float t2 = -b - sqrtf(delta);
-
-            if (t1 > 0 && t2 > 0)
-                return true;
-        }
+        // auto distance = ray.origin - sphere.position;
+        // 
+        // float b = glm::dot(ray.direction, distance);
+        // float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;
+        // float delta = b * b - c;
+        // 
+        // if (delta > 0)
+        // {
+        //     float t1 = -b + sqrtf(delta);
+        //     float t2 = -b - sqrtf(delta);
+        // 
+        //     if (t1 > 0 && t2 > 0)
+        //         return true;
+        // }
         return false;
     }
     Ray reflect(Ray ray, const HitInfo& hit_info)
@@ -71,24 +71,24 @@ namespace tracer
     }
     std::optional<HitInfo> sphere_intersection(const Ray& ray, const Sphere& sphere)
     {
-        gears::Origin distance = ray.origin - sphere.position;
-
-        float b = glm::dot(ray.direction, distance);
-        float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;
-        float delta = b * b - c;
-
-        if (delta > 0)
-        {
-            float t1 = -b + sqrtf(delta);
-            float t2 = -b - sqrtf(delta);
-
-            if (t1 > 0 && t2 > 0)
-            {
-                auto touch_point = ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
-
-                return HitInfo{ touch_point, glm::normalize(touch_point - sphere.position) };
-            }
-        }
+        // gears::Origin distance = ray.origin - sphere.position;
+        // 
+        // float b = glm::dot(ray.direction, distance);
+        // float c = glm::dot(distance, distance) - sphere.radius * sphere.radius;
+        // float delta = b * b - c;
+        // 
+        // if (delta > 0)
+        // {
+        //     float t1 = -b + sqrtf(delta);
+        //     float t2 = -b - sqrtf(delta);
+        // 
+        //     if (t1 > 0 && t2 > 0)
+        //     {
+        //         auto touch_point = ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
+        // 
+        //         return HitInfo{ touch_point, glm::normalize(touch_point - sphere.position) };
+        //     }
+        // }
         return std::nullopt;
     }
 

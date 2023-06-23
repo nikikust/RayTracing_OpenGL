@@ -36,15 +36,14 @@ public:
 
     uint32_t max_reflections = 2;
 
-    gears::LookAt sun_angle = glm::normalize(gears::LookAt{  -1.f, 1.f, -1.f });
+    gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.f, 1.f, 1.f });
 
     // --- Objects data
 
     std::vector<tracer::Sphere> spheres{
-        tracer::Sphere{{  55.f,  500.f,    55.f},   25.f, { 0.05f, { 0.5f, 0.0f, 0.0f, 1.f } }},
-        tracer::Sphere{{   0.f,  500.f,    55.f},   25.f, { 0.75f, { 1.0f, 1.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{   0.f,  500.f,     0.f},   25.f, { 0.15f, { 0.5f, 0.5f, 0.5f, 1.f } }},
-        tracer::Sphere{{   0.f,    0.f,   500.f},   25.f, { 0.00f, { 0.0f, 0.0f, 1.0f, 1.f } }},
-        tracer::Sphere{{   0.f,  500.f, -5025.f}, 5000.f, { 0.00f, { 0.0f, 0.5f, 0.0f, 1.f } }}
+        { glm::vec4(-55.0f, 300.0f, -55.0f, 50.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) },
+		{ glm::vec4(-55.0f, 300.0f,  55.0f, 50.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) },
+		{ glm::vec4( 55.0f, 300.0f, -55.0f, 50.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) },
+		{ glm::vec4( 55.0f, 300.0f,  55.0f, 50.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) }
     };
 };

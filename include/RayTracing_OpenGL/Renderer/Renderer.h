@@ -35,10 +35,10 @@ private:
     GLuint id_VAO;                 // for shader
     GLuint id_VBO;                 //
     GLuint id_UBO;                 //
-    GLfloat* dotPositions;         // 
-    GLfloat* dotColors;            //
-    GLintptr size_of_dotPositions; // for VBO
-    GLintptr size_of_dotColors;    // 
-
-    std::vector<int> m_ImageHorizontalIter, m_ImageVerticalIter;
+    // GLfloat* dotPositions;         // 
+    // GLfloat* dotColors;            //
+    // GLintptr size_of_dotPositions; // for VBO
+    // GLintptr size_of_dotColors;    // 
+    // 
+    // std::vector<int> m_ImageHorizontalIter, m_ImageVerticalIter;
 };

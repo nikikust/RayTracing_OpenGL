@@ -11,18 +11,35 @@ Renderer::Renderer(DataStorage& data_storage)
 }
 Renderer::~Renderer()
 {
-    delete[] dotPositions;
-    delete[] dotColors;
+    // delete[] dotPositions;
+    // delete[] dotColors;
 }
 
 void Renderer::update()
 {
     // --- Ray Tracing
 
-    glm::vec2 size{ data_storage_.screen_size };
-    
-    auto rotator = tracer::rotation_matrix(data_storage_.camera.angles.x, data_storage_.camera.angles.y);
     float focus_distance = 1.f / tanf(data_storage_.vFOV_half);
+
+    glUseProgram(shader_program);
+
+    //////
+
+    GLint resUniform = glGetUniformLocation(shader_program, "resolution");
+    glUniform2f(resUniform, (float)data_storage_.screen_size.x, (float)data_storage_.screen_size.y);
+
+    GLint ratioUniform = glGetUniformLocation(shader_program, "screen_ratio");
+    glUniform1f(ratioUniform, data_storage_.screen_ratio);
+
+    GLint sizeUniform = glGetUniformLocation(shader_program, "spheres_amount");
+    glUniform1i(sizeUniform, (GLint)data_storage_.spheres.size());
+
+    GLint sunDirUniform = glGetUniformLocation(shader_program, "sun_direction");
+    glUniform3f(sunDirUniform, data_storage_.sun_direction.x, data_storage_.sun_direction.y, data_storage_.sun_direction.z);
+
+    /*
+    auto rotator = tracer::rotation_matrix(data_storage_.camera.angles.x, data_storage_.camera.angles.y);
+    
 
     std::for_each(std::execution::par_unseq, m_ImageVerticalIter.begin(), m_ImageVerticalIter.end(),
         [this, size, &rotator, focus_distance](int y)
@@ -59,7 +76,7 @@ void Renderer::update()
             );
         }
     );
-
+    
     glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
     glBufferData(GL_ARRAY_BUFFER, size_of_dotPositions + size_of_dotColors, NULL, GL_DYNAMIC_DRAW);
 
@@ -67,63 +84,84 @@ void Renderer::update()
     glBufferSubData(GL_ARRAY_BUFFER, size_of_dotPositions, size_of_dotColors, dotColors);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    */
 }
 
 void Renderer::draw()
 {
-    // Use shader program
-    glUseProgram(shader_program);
-
-    // Bind VAO
-    glBindVertexArray(id_VAO);
-
-    // Draw points
-    glDrawArrays(GL_POINTS, 0, (GLsizei)(size_of_dotPositions / sizeof(float) / 2));
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void Renderer::on_resize(bool init)
 {
     // --- Update ray tracing boundaries
-    m_ImageHorizontalIter.resize(data_storage_.screen_size.x);
-    m_ImageVerticalIter.resize(data_storage_.screen_size.y);
-    for (int i = 0; i < data_storage_.screen_size.x; i++)
-        m_ImageHorizontalIter[i] = i;
-    for (int i = 0; i < data_storage_.screen_size.y; i++)
-        m_ImageVerticalIter[i] = i;
-
+    // m_ImageHorizontalIter.resize(data_storage_.screen_size.x);
+    // m_ImageVerticalIter.resize(data_storage_.screen_size.y);
+    // for (int i = 0; i < data_storage_.screen_size.x; i++)
+    //     m_ImageHorizontalIter[i] = i;
+    // for (int i = 0; i < data_storage_.screen_size.y; i++)
+    //     m_ImageVerticalIter[i] = i;
+    //
     // --- Realloc frame buffer
-    if (!init)
-    {
-        delete[] dotPositions;
-        delete[] dotColors;
-    }
-
-    dotPositions = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 2];
-    dotColors    = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 4];
-
-    size_of_dotPositions = 2 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
-    size_of_dotColors    = 4 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
-
+    // if (!init)
+    // {
+    //     delete[] dotPositions;
+    //     delete[] dotColors;
+    // }
+    //
+    // dotPositions = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 2];
+    // dotColors    = new float[data_storage_.screen_size.x * data_storage_.screen_size.y * 4];
+    // 
+    // size_of_dotPositions = 2 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
+    // size_of_dotColors    = 4 * sizeof(float) * data_storage_.screen_size.x * data_storage_.screen_size.y;
+    //
     // --- Recalculate OpenGL buffer pointers
-    glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)(0));
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)(size_of_dotPositions));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
+    // 
+    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (GLvoid*)(0));
+    // glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (GLvoid*)(size_of_dotPositions));
+    // 
+    // glEnableVertexAttribArray(0);
+    // glEnableVertexAttribArray(1);
+    // 
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
 void Renderer::prepare_buffers()
 {
-    glGenBuffers(1, &id_VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
+    // Create a full-screen quad
+	GLfloat vertices[] = {
+		-1.0f, -1.0f, 0.0f, 1.0f,
+		 1.0f, -1.0f, 0.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f, 1.0f,
+		 1.0f,  1.0f, 0.0f, 1.0f
+	};
+	
+	// --- VAO
 
-    glGenVertexArrays(1, &id_VAO);
-    glBindVertexArray(id_VAO);
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// --- VBO
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// --- UBO
+
+	GLuint ubo;
+	glGenBuffers(1, &ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(tracer::Sphere) * 128, data_storage_.spheres.data(), GL_DYNAMIC_DRAW);
+
+	GLuint bindingPoint = 0;
+	glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ubo);
 }
 void Renderer::prepare_shaders()
 {
@@ -151,6 +189,10 @@ void Renderer::prepare_shaders()
     // --- Delete shaders
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
+
+    GLint posAttrib = glGetAttribLocation(shader_program, "position");
+    glEnableVertexAttribArray(posAttrib);
+    glVertexAttribPointer(posAttrib, 4, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
 gears::Color Renderer::trace_ray(const tracer::Ray& ray)
@@ -161,7 +203,7 @@ gears::Color Renderer::trace_ray(const tracer::Ray& ray)
         return { 0.f, 0.f, 0.f, 1.f };
 
     float min_hit_distance = FLT_MAX;
-    gears::Color res_color = sky_intersection(ray, glm::dot(-data_storage_.sun_angle, ray.direction) > 0.999f);
+    gears::Color res_color = sky_intersection(ray, glm::dot(-data_storage_.sun_direction, ray.direction) > 0.999f);
 
     for (auto& sphere : data_storage_.spheres)
     {
@@ -170,14 +212,14 @@ gears::Color Renderer::trace_ray(const tracer::Ray& ray)
             float curr_distance = glm::length(intr.value().hit_origin - ray.origin);
             if (curr_distance < min_hit_distance)
             {
-                auto diff = sphere.material.color * light_intensity(intr.value().normal, data_storage_.sun_angle);
-                if (sphere.material.albedo == 0.f)
+                auto diff = sphere.material.color * light_intensity(intr.value().normal, data_storage_.sun_direction);
+                if (true) // sphere.material.albedo == 0.f)
                     res_color = diff;
                 else
                 {
                     auto new_ray = reflect(ray, intr.value());
 
-                    res_color = glm::mix(diff, trace_ray(new_ray), sphere.material.albedo);
+                    res_color = glm::mix(diff, trace_ray(new_ray), 0.0f); // sphere.material.albedo);
                 }
                 min_hit_distance = curr_distance;
             }

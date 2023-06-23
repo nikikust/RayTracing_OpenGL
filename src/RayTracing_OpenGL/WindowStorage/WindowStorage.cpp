@@ -25,9 +25,6 @@ int WindowStorage::run()
         renderer_ .update();
         interface_.update();
 
-        if (data_storage_.capture_IO)
-            window_.hide_mouse();
-
         window_.cls();
         renderer_ .draw();
         interface_.draw();
