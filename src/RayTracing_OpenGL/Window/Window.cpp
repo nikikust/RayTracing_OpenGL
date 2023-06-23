@@ -2,7 +2,7 @@
 
 
 Window::Window(DataStorage& data_storage, const std::string window_title)
-	:data_storage_(data_storage)
+    :data_storage_(data_storage)
 {
     create(window_title);
 }

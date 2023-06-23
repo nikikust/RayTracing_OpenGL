@@ -9,9 +9,9 @@
 class DataStorage
 {
 public:
-	DataStorage();
-	DataStorage(DataStorage&) = delete;
-	DataStorage(DataStorage&&) = delete;
+    DataStorage();
+    DataStorage(DataStorage&) = delete;
+    DataStorage(DataStorage&&) = delete;
 
     // --- Data --- //
 
