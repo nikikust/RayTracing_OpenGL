@@ -1,5 +1,6 @@
 #pragma once
 #include <execution>
+#include <random>
 
 #include <RayTracing_OpenGL/Renderer/Tracer/Tracer.h>
 #include <RayTracing_OpenGL/DataStorage/DataStorage.h>
@@ -28,14 +29,18 @@ private:
 
     void catch_errors(GLuint vertex_shader, GLuint fragment_shader, GLuint shader_program);
 
-    gears::Color trace_ray(const tracer::Ray& ray);
-
-
+    // - Data
     DataStorage& data_storage_;
     
+    // - Shader data
     GLuint shader_program;
     GLuint id_VAO;        
     GLuint id_VBO;
     GLuint id_UBO_spheres;
     GLuint id_UBO_materials;
+
+    // - Randomizer
+    std::random_device randomizer;
+    std::mt19937 e2;
+    std::uniform_real_distribution<> dist{0.0f, 1.0f};
 };

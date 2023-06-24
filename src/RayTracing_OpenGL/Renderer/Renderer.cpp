@@ -2,7 +2,8 @@
 
 
 Renderer::Renderer(DataStorage& data_storage)
-    : data_storage_(data_storage)
+    : data_storage_(data_storage),
+      e2(randomizer())
 {
     prepare_buffers();
     prepare_shaders();
@@ -45,6 +46,12 @@ void Renderer::update()
     GLint camera_position_uniform = glGetUniformLocation(shader_program, "camera_position");
     glUniform3fv(camera_position_uniform, 1, glm::value_ptr(data_storage_.camera.origin));
 
+    // - Randomizer
+    GLint u_seed1_uniform = glGetUniformLocation(shader_program, "u_seed1");
+    glUniform2f(u_seed1_uniform, (float)dist(e2) * 999.0f, (float)dist(e2) * 999.0f);
+
+    GLint u_seed2_uniform = glGetUniformLocation(shader_program, "u_seed2");
+    glUniform2f(u_seed2_uniform, (float)dist(e2) * 999.0f, (float)dist(e2) * 999.0f);
 }
 
 void Renderer::draw()
@@ -185,39 +192,4 @@ void Renderer::catch_errors(GLuint vertex_shader, GLuint fragment_shader, GLuint
     {
         std::cout << "Shaders are compiled and linked successfully";
     }
-}
-
-
-gears::Color Renderer::trace_ray(const tracer::Ray& ray)
-{
-    using namespace tracer;
-    
-    if (ray.reflections > data_storage_.max_reflections)
-        return { 0.f, 0.f, 0.f, 1.f };
-
-    float min_hit_distance = FLT_MAX;
-    gears::Color res_color = sky_intersection(ray, glm::dot(-data_storage_.sun_direction, ray.direction) > 0.999f);
-
-    for (auto& sphere : data_storage_.spheres)
-    {
-        if (auto intr = sphere_intersection(ray, sphere))
-        {
-            float curr_distance = glm::length(intr.value().hit_origin - ray.origin);
-            if (curr_distance < min_hit_distance)
-            {
-                auto diff = data_storage_.materials.at(sphere.material_id).color * light_intensity(intr.value().normal, data_storage_.sun_direction);
-                if (true) // sphere.material.albedo == 0.f)
-                    res_color = diff;
-                else
-                {
-                    auto new_ray = reflect(ray, intr.value());
-
-                    res_color = glm::mix(diff, trace_ray(new_ray), 0.0f); // sphere.material.albedo);
-                }
-                min_hit_distance = curr_distance;
-            }
-        }
-    }
-
-    return res_color;
 }

@@ -43,15 +43,17 @@ public:
     // --- Objects data
 
     std::vector<tracer::Sphere> spheres{
-        { glm::vec4(-55.0f, 300.0f, -55.0f, 50.0f), 0 },
-		{ glm::vec4(-55.0f, 300.0f,  55.0f, 50.0f), 1 },
-		{ glm::vec4( 55.0f, 300.0f, -55.0f, 50.0f), 2 },
-		{ glm::vec4( 55.0f, 300.0f,  55.0f, 50.0f), 3 }
+        { glm::vec4(-55.0f, 300.0f,    -55.0f,    50.0f), 0 },
+		{ glm::vec4(-55.0f, 300.0f,     55.0f,    50.0f), 1 },
+		{ glm::vec4( 55.0f, 300.0f,    -55.0f,    50.0f), 2 },
+		{ glm::vec4( 55.0f, 300.0f,     55.0f,    50.0f), 3 },
+		{ glm::vec4(  0.0f, 300.0f, -10105.0f, 10000.0f), 4 }
     };
     std::vector<tracer::Material> materials{
-        { glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), 0.0f, 0.0f },
-        { glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), 0.0f, 0.0f },
-        { glm::vec4(0.2f, 0.2f, 1.0f, 1.0f), 0.0f, 0.0f },
-        { glm::vec4(0.1f, 0.5f, 1.0f, 1.0f), 0.0f, 0.0f }
+        { glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), 0.50f, 0.0f },
+        { glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), 0.05f, 0.0f },
+        { glm::vec4(0.2f, 0.2f, 1.0f, 1.0f), 0.02f, 0.0f },
+        { glm::vec4(0.1f, 0.5f, 1.0f, 1.0f), 0.00f, 0.0f },
+        { glm::vec4(0.2f, 0.9f, 0.2f, 1.0f), 1.00f, 0.0f }
     };
 };
