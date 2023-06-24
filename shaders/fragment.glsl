@@ -1,6 +1,8 @@
 #version 450 core
+#define FLT_MAX 3.402823466e+38
+
 #define MAX_SPHERES 128
-#define MAX_REFLECTIONS 8
+#define MAX_REFLECTIONS 16
 
 // --- STRUCTURES
 
@@ -14,6 +16,7 @@ struct Sphere {
 struct HitInfo {
     vec3 hit_origin;
     vec3 normal;
+    vec4 color;
 
     float hit_distance;
 };
@@ -63,10 +66,46 @@ HitInfo sphere_intersection(in Ray ray, in Sphere sphere) {
         {
             vec3 touch_point = ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
 
-            return HitInfo(touch_point, normalize(touch_point - sphere.position_and_radius.xyz), distance(ray.origin, touch_point));
+            return HitInfo(touch_point, normalize(touch_point - sphere.position_and_radius.xyz), sphere.color, distance(ray.origin, touch_point));
         }
     }
-    return HitInfo(ray.origin, ray.direction, 0.0);
+    return HitInfo(ray.origin, ray.direction, vec4(0.0), 0.0);
+}
+
+
+// --- Tracer
+
+vec4 trace_ray(in Ray ray){
+    vec4 color = vec4(1.0);
+
+    for (int reflection = 1; reflection <= MAX_REFLECTIONS; ++reflection)
+    {
+        HitInfo closest_hit = HitInfo(ray.origin, ray.direction, vec4(0.0), FLT_MAX);
+
+        for (int i = 0; i < spheres_amount; i++){
+            HitInfo hit = sphere_intersection(ray, spheres[i]);
+
+            if (hit.hit_distance > 0.0 && hit.hit_distance < closest_hit.hit_distance)
+                closest_hit = hit;
+        }
+
+        if (closest_hit.hit_distance == FLT_MAX) {
+            color *= mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z)));
+            break;
+        } else {
+            color *= closest_hit.color;
+
+            ray.direction = reflect(ray.direction, closest_hit.normal);
+
+            ray.origin = closest_hit.hit_origin + ray.direction * 0.001;
+        }
+
+        if (reflection == MAX_REFLECTIONS) {
+            color = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+    }
+
+    return color;
 }
 
 // --- Main
@@ -86,45 +125,5 @@ void main() {
 
     Ray ray = Ray(camera_position, ray_direction * camera_rotation);
 
-    vec4 color = {1.0, 1.0, 1.0, 1.0};
-    
-
-
-    for (int reflection = 1; reflection <= MAX_REFLECTIONS; ++reflection)
-    {
-        vec4 closest_color;
-        float closest_hit = 1.0 / 0.0;
-        HitInfo closest_hit_point;
-
-        for (int i = 0; i < spheres_amount; i++){
-            HitInfo hit = sphere_intersection(ray, spheres[i]);
-
-            if (hit.hit_distance > 0.0 && hit.hit_distance < closest_hit){
-                closest_hit_point = hit;
-                closest_hit = hit.hit_distance;
-                closest_color = spheres[i].color; // * max(dot(hit.normal, -sun_direction), 0);
-            }
-        }
-
-        if (closest_hit == 1.0 / 0.0)
-        {
-            color *= mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z)));
-            break;
-        }
-        else
-        {
-            color *= closest_color;
-
-            ray.direction = reflect(ray.direction, closest_hit_point.normal);
-
-            ray.origin = closest_hit_point.hit_origin + ray.direction * 0.001;
-        }
-
-        if (reflection == MAX_REFLECTIONS)
-        {
-            // color = vec4(0.0, 0.0, 0.0, 1.0);
-        }
-    }
-
-    fragColor = color;
+    fragColor = trace_ray(ray);
 }
