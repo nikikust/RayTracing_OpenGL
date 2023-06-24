@@ -36,19 +36,20 @@ namespace tracer
 
     struct Material
     {
-        // float albedo;
+        glm::vec4 stats = {
+            0.0f, // roughness
+            0.0f, // metallic
+            0.0f, 0.0f
+        };
 
         gears::Color color;
     };
 
     struct Sphere
     {
-        // gears::Origin position; // packed as vec4
-        // float radius;           //
-
         glm::vec4 position_and_radius;
 
-        Material material;      // packed as vec4
+        uint32_t material_id;      // packed as vec4
     };
 
 } // namespace tracer

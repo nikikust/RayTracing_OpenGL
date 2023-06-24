@@ -1,6 +1,7 @@
 #version 450 core
 #define FLT_MAX 3.402823466e+38
 
+#define MAX_MATERIALS 128
 #define MAX_SPHERES 128
 #define MAX_REFLECTIONS 16
 
@@ -9,6 +10,11 @@
 // - Objects
 struct Sphere {
     vec4 position_and_radius;
+    uint material_id;
+};
+
+struct Material {
+    vec4 stats; // roughness, metallic
     vec4 color;
 };
 
@@ -28,8 +34,15 @@ struct Ray {
 
 // --- UNIFORMS
 
+// - Materials
+
+layout(std140, binding = 0) uniform materials_UBO {
+    Material[MAX_MATERIALS] materials;
+};
+uniform int materials_amount;
+
 // - Objects
-layout(std140, binding = 0) uniform spheres_UBO {
+layout(std140, binding = 1) uniform spheres_UBO {
     Sphere[MAX_SPHERES] spheres;
 };
 uniform int spheres_amount;
@@ -66,7 +79,11 @@ HitInfo sphere_intersection(in Ray ray, in Sphere sphere) {
         {
             vec3 touch_point = ray.origin + ray.direction * (t1 < t2 ? t1 : t2);
 
-            return HitInfo(touch_point, normalize(touch_point - sphere.position_and_radius.xyz), sphere.color, distance(ray.origin, touch_point));
+            return HitInfo(
+                touch_point,
+                normalize(touch_point - sphere.position_and_radius.xyz),
+                materials[sphere.material_id].color,
+                distance(ray.origin, touch_point));
         }
     }
     return HitInfo(ray.origin, ray.direction, vec4(0.0), 0.0);

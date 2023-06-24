@@ -26,13 +26,16 @@ private:
     void prepare_buffers();
     void prepare_shaders();
 
+    void catch_errors(GLuint vertex_shader, GLuint fragment_shader, GLuint shader_program);
+
     gears::Color trace_ray(const tracer::Ray& ray);
 
 
     DataStorage& data_storage_;
     
-    GLuint shader_program; //
-    GLuint id_VAO;         // for shader
-    GLuint id_VBO;         //
-    GLuint id_UBO;         //
+    GLuint shader_program;
+    GLuint id_VAO;        
+    GLuint id_VBO;
+    GLuint id_UBO_spheres;
+    GLuint id_UBO_materials;
 };

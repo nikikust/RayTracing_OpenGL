@@ -19,9 +19,13 @@ void Renderer::update()
 {
     glUseProgram(shader_program);
 
+    // - Materials
+    GLint materials_amount_uniform = glGetUniformLocation(shader_program, "materials_amount");
+    glUniform1i(materials_amount_uniform, (GLint)data_storage_.materials.size());
+
     // - Objects
-    GLint sizeUniform = glGetUniformLocation(shader_program, "spheres_amount");
-    glUniform1i(sizeUniform, (GLint)data_storage_.spheres.size());
+    GLint spheres_amount_uniform = glGetUniformLocation(shader_program, "spheres_amount");
+    glUniform1i(spheres_amount_uniform, (GLint)data_storage_.spheres.size());
 
     // - Scene info
     GLint sun_direction_uniform = glGetUniformLocation(shader_program, "sun_direction");
@@ -78,27 +82,32 @@ void Renderer::prepare_buffers()
 	
 	// --- VAO
 
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	glGenVertexArrays(1, &id_VAO);
+	glBindVertexArray(id_VAO);
 
 	// --- VBO
 
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glGenBuffers(1, &id_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, id_VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// --- UBO
+    // --- UBO for Materials
 
-	GLuint ubo;
-	glGenBuffers(1, &ubo);
-	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+    glGenBuffers(1, &id_UBO_materials);
+    glBindBuffer(GL_UNIFORM_BUFFER, id_UBO_materials);
+
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(tracer::Material) * 128, data_storage_.materials.data(), GL_DYNAMIC_DRAW);
+
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, id_UBO_materials);
+
+	// --- UBO for Spheres
+
+	glGenBuffers(1, &id_UBO_spheres);
+	glBindBuffer(GL_UNIFORM_BUFFER, id_UBO_spheres);
 
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(tracer::Sphere) * 128, data_storage_.spheres.data(), GL_DYNAMIC_DRAW);
 
-	GLuint bindingPoint = 0;
-	glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, ubo);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, id_UBO_spheres);
 }
 void Renderer::prepare_shaders()
 {
@@ -123,6 +132,10 @@ void Renderer::prepare_shaders()
     glAttachShader(shader_program, fragment_shader);
     glLinkProgram(shader_program);
 
+    // --- Catch errors
+
+    catch_errors(vertex_shader, fragment_shader, shader_program);
+
     // --- Delete shaders
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
@@ -131,6 +144,49 @@ void Renderer::prepare_shaders()
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 4, GL_FLOAT, GL_FALSE, 0, 0);
 }
+void Renderer::catch_errors(GLuint vertex_shader, GLuint fragment_shader, GLuint shader_program)
+{
+    GLint testval;
+    bool abort = false;
+
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &testval);
+    if (testval == GL_FALSE)
+    {
+        abort = true;
+        char infolog[1024];
+        glGetShaderInfoLog(vertex_shader, 1024, NULL, infolog);
+        std::cout << "\nThe vertex shader failed to compile with the error:" << std::endl << infolog << std::endl;
+    }
+
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &testval);
+    if (testval == GL_FALSE)
+    {
+        abort = true;
+        char infolog[1024];
+        glGetShaderInfoLog(fragment_shader, 1024, NULL, infolog);
+        std::cout << "\nThe fragment shader failed to compile with the error:" << std::endl << infolog << std::endl;
+    }
+
+    glGetProgramiv(shader_program, GL_LINK_STATUS, &testval);
+    if (testval == GL_FALSE)
+    {
+        abort = true;
+        char infolog[1024];
+        glGetProgramInfoLog(shader_program, 1024, NULL, infolog);
+        std::cout << "\nThe program failed to compile with the error:" << std::endl << infolog << std::endl;
+    }
+
+    if (abort)
+    {
+        std::cout << "Errors occured, cannot continue, aborting." << std::endl;
+        exit(-1);
+    }
+    else
+    {
+        std::cout << "Shaders are compiled and linked successfully";
+    }
+}
+
 
 gears::Color Renderer::trace_ray(const tracer::Ray& ray)
 {
@@ -149,7 +205,7 @@ gears::Color Renderer::trace_ray(const tracer::Ray& ray)
             float curr_distance = glm::length(intr.value().hit_origin - ray.origin);
             if (curr_distance < min_hit_distance)
             {
-                auto diff = sphere.material.color * light_intensity(intr.value().normal, data_storage_.sun_direction);
+                auto diff = data_storage_.materials.at(sphere.material_id).color * light_intensity(intr.value().normal, data_storage_.sun_direction);
                 if (true) // sphere.material.albedo == 0.f)
                     res_color = diff;
                 else
