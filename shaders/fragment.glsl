@@ -1,5 +1,6 @@
 #version 450 core
 #define MAX_SPHERES 128
+#define MAX_REFLECTIONS 8
 
 // --- STRUCTURES
 
@@ -20,9 +21,6 @@ struct HitInfo {
 struct Ray {
     vec3 origin;
     vec3 direction;
-    vec4 color;
-
-    int reflections;
 };
 
 // --- UNIFORMS
@@ -40,6 +38,8 @@ uniform float focus_distance;
 
 // - Scene info
 uniform vec3 sun_direction;
+uniform vec4 zenith_color;
+uniform vec4 horizon_color;
 
 // - Camera
 uniform mat3 camera_rotation;
@@ -84,19 +84,47 @@ void main() {
         )
     );
 
-    Ray ray = Ray(camera_position, ray_direction * camera_rotation, vec4(1, 1, 1, 1), 0);
+    Ray ray = Ray(camera_position, ray_direction * camera_rotation);
 
-    vec4 color = {0.0, 0.0, 0.0, 1.0};
-    float closest_hit = 1.0 / 0.0;
+    vec4 color = {1.0, 1.0, 1.0, 1.0};
+    
 
-    for (int i = 0; i < spheres_amount; i++){
-        HitInfo hit = sphere_intersection(ray, spheres[i]);
 
-        if (hit.hit_distance > 0.0 && hit.hit_distance < closest_hit){
-            closest_hit = hit.hit_distance;
-            color = spheres[i].color * max(dot(hit.normal, -sun_direction), 0);
+    for (int reflection = 1; reflection <= MAX_REFLECTIONS; ++reflection)
+    {
+        vec4 closest_color;
+        float closest_hit = 1.0 / 0.0;
+        HitInfo closest_hit_point;
+
+        for (int i = 0; i < spheres_amount; i++){
+            HitInfo hit = sphere_intersection(ray, spheres[i]);
+
+            if (hit.hit_distance > 0.0 && hit.hit_distance < closest_hit){
+                closest_hit_point = hit;
+                closest_hit = hit.hit_distance;
+                closest_color = spheres[i].color; // * max(dot(hit.normal, -sun_direction), 0);
+            }
+        }
+
+        if (closest_hit == 1.0 / 0.0)
+        {
+            color *= mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z)));
+            break;
+        }
+        else
+        {
+            color *= closest_color;
+
+            ray.direction = reflect(ray.direction, closest_hit_point.normal);
+
+            ray.origin = closest_hit_point.hit_origin + ray.direction * 0.001;
+        }
+
+        if (reflection == MAX_REFLECTIONS)
+        {
+            // color = vec4(0.0, 0.0, 0.0, 1.0);
         }
     }
-    
+
     fragColor = color;
 }

@@ -27,6 +27,12 @@ void Renderer::update()
     GLint sun_direction_uniform = glGetUniformLocation(shader_program, "sun_direction");
     glUniform3fv(sun_direction_uniform, 1, glm::value_ptr(data_storage_.sun_direction));
 
+    GLint zenith_color_uniform = glGetUniformLocation(shader_program, "zenith_color");
+    glUniform4fv(zenith_color_uniform, 1, glm::value_ptr(data_storage_.zenith_color));
+
+    GLint horizon_color_uniform = glGetUniformLocation(shader_program, "horizon_color");
+    glUniform4fv(horizon_color_uniform, 1, glm::value_ptr(data_storage_.horizon_color));
+    
     // - Camera
     auto rotator = tracer::rotation_matrix(data_storage_.camera.angles.x, data_storage_.camera.angles.y);
     GLint camera_rotation_uniform = glGetUniformLocation(shader_program, "camera_rotation");
