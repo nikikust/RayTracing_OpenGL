@@ -10,12 +10,15 @@
 // - Objects
 struct Sphere {
     vec4 position_and_radius;
+
     uint material_id;
 };
 
 struct Material {
-    vec4 stats; // roughness, metallic
     vec4 color;
+
+    float roughness;
+    float metallic;
 };
 
 // - Internal structures
@@ -109,7 +112,8 @@ vec4 trace_ray(in Ray ray){
         if (closest_hit.hit_distance == FLT_MAX) {
             color *= mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z)));
             break;
-        } else {
+        } 
+        else {
             color *= closest_hit.color;
 
             ray.direction = reflect(ray.direction, closest_hit.normal);

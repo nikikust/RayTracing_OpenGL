@@ -34,22 +34,18 @@ namespace tracer
               color(color), reflections(reflections) {}
     };
 
-    struct Material
+    struct alignas(sizeof(glm::vec4) * 2) Material
     {
-        glm::vec4 stats = {
-            0.0f, // roughness
-            0.0f, // metallic
-            0.0f, 0.0f
-        };
-
         gears::Color color;
+
+        float roughness = 0.0f; // packed as vec4
+        float metallic  = 0.0f; //
     };
 
-    struct Sphere
+    struct alignas(sizeof(glm::vec4) * 2) Sphere
     {
         glm::vec4 position_and_radius;
 
-        uint32_t material_id;      // packed as vec4
+        uint32_t material_id;   // packed as vec4
     };
-
 } // namespace tracer
