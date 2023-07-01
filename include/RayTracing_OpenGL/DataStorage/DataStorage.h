@@ -28,7 +28,7 @@ public:
 
     // --- Render data
 
-    tracer::Camera camera = { { 0.f, 0.f, 0.f}, {0.f, 0.f} };
+    tracer::Camera camera = { { -400.f, 500.f, 200.f}, {2.0f, -0.5f} };
 
     float vFOV_half = 50.f / 2.f * (glm::pi<float>() / 180.f);
     float screen_ratio = 1.0f;
@@ -37,17 +37,17 @@ public:
     uint32_t max_reflections = 2;
 
     gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.0f, 1.0f, -1.0f });
-    gears::Color zenith_color { 0.4f, 0.6f, 0.8f, 1.0f };
-    gears::Color horizon_color{ 1.0f, 1.0f, 1.0f, 1.0f};
+    gears::Color zenith_color { 0.0f, 0.0f, 0.0f, 1.0f };
+    gears::Color horizon_color{ 0.0f, 0.0f, 0.0f, 1.0f};
 
     // --- Objects data
 
     std::vector<tracer::Sphere> spheres{
-        { glm::vec4(-55.0f, 300.0f,    -55.0f,    50.0f), 0 },
-		{ glm::vec4(-55.0f, 300.0f,     55.0f,    50.0f), 1 },
-		{ glm::vec4( 55.0f, 300.0f,    -55.0f,    50.0f), 2 },
-		{ glm::vec4( 55.0f, 300.0f,     55.0f,    50.0f), 3 },
-		{ glm::vec4(  0.0f, 300.0f, -10105.0f, 10000.0f), 4 }
+        { glm::vec4(-55.0f,  300.0f,    -55.0f,    50.0f), 0 },
+		{ glm::vec4(-55.0f,  300.0f,     55.0f,    50.0f), 1 },
+		{ glm::vec4( 55.0f, 5000.0f,    500.0f,  2000.0f), 2 },
+		{ glm::vec4( 55.0f,  300.0f,     55.0f,    50.0f), 3 },
+		{ glm::vec4(  0.0f,  300.0f, -10105.0f, 10000.0f), 4 }
     };
     std::vector<tracer::Material> materials{
         { glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), 0.50f, 0.0f },

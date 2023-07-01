@@ -2,7 +2,7 @@
 #define FLT_MAX 3.402823466e+38
 
 #define MAX_REFLECTIONS 8
-#define REPEATS_COUNT 8
+#define REPEATS_COUNT 16
 
 #define MAX_MATERIALS 128
 #define MAX_SPHERES 128
@@ -142,7 +142,7 @@ HitInfo sphere_intersection(Ray ray, Sphere sphere) {
 
 vec4 trace_ray(Ray ray) {
     vec4 color = vec4(1.0);
-        
+    
     for (int reflection = 1; reflection <= MAX_REFLECTIONS; ++reflection) {
         HitInfo closest_hit = HitInfo(ray.origin, ray.direction, 0, FLT_MAX);
 
@@ -159,16 +159,23 @@ vec4 trace_ray(Ray ray) {
         }
         else {
             Material material = materials[closest_hit.material_id];
-            color *= material.color;
+            if (closest_hit.material_id == 2) {
+                color *= material.color * 256;
 
-            vec3 reflected = reflect(ray.direction, closest_hit.normal);
+                break;
+            }
+            else {
+                color *= material.color;
 
-            vec3 random_direction = random_on_sphere();
-	        vec3 diffuse = random_direction * sign(dot(random_direction, closest_hit.normal));
+                vec3 reflected = reflect(ray.direction, closest_hit.normal);
 
-            ray.direction  = mix(reflected, diffuse, material.roughness);
+                vec3 random_direction = random_on_sphere();
+	            vec3 diffuse = random_direction * sign(dot(random_direction, closest_hit.normal));
 
-            ray.origin     = closest_hit.hit_origin + ray.direction * 0.001;
+                ray.direction  = mix(reflected, diffuse, material.roughness);
+
+                ray.origin     = closest_hit.hit_origin + ray.direction * 0.001;
+            }
         }
 
         if (reflection == MAX_REFLECTIONS) {
