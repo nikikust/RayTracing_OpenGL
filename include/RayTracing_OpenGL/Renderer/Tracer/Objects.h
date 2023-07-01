@@ -34,12 +34,16 @@ namespace tracer
               color(color), reflections(reflections) {}
     };
 
-    struct alignas(sizeof(glm::vec4) * 2) Material
+    struct alignas(sizeof(glm::vec4) * 4) Material
     {
-        gears::Color color;
+        gears::Color albedo;
+        gears::Color emission_color;
+        gears::Color blank = {};
 
         float roughness = 0.0f; // packed as vec4
-        float metallic  = 0.0f; //
+        float metallic = 0.0f; //
+        float emissive = 0.0f; //
+        float emission_power = 1.0;
     };
 
     struct alignas(sizeof(glm::vec4) * 2) Sphere

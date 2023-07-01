@@ -17,10 +17,14 @@ struct Sphere {
 };
 
 struct Material {
-    vec4 color;
+    vec4 albedo;
+    vec4 emission_color;
+    vec4 blank;
 
     float roughness;
     float metallic;
+    float emissive;
+    float emission_power;
 };
 
 // - Internal structures
@@ -159,13 +163,13 @@ vec4 trace_ray(Ray ray) {
         }
         else {
             Material material = materials[closest_hit.material_id];
-            if (closest_hit.material_id == 2) {
-                color *= material.color * 256;
+            if (material.emissive == 1.0) {
+                color *= material.emission_color * material.emission_power;
 
                 break;
             }
             else {
-                color *= material.color;
+                color *= material.albedo;
 
                 vec3 reflected = reflect(ray.direction, closest_hit.normal);
 
@@ -173,7 +177,6 @@ vec4 trace_ray(Ray ray) {
 	            vec3 diffuse = random_direction * sign(dot(random_direction, closest_hit.normal));
 
                 ray.direction  = mix(reflected, diffuse, material.roughness);
-
                 ray.origin     = closest_hit.hit_origin + ray.direction * 0.001;
             }
         }
