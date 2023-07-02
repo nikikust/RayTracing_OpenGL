@@ -146,7 +146,8 @@ HitInfo sphere_intersection(Ray ray, Sphere sphere) {
 
 vec4 trace_ray(Ray ray) {
     vec4 color = vec4(1.0);
-    
+    vec4 light = vec4(0.0);
+
     for (int reflection = 1; reflection <= MAX_REFLECTIONS; ++reflection) {
         HitInfo closest_hit = HitInfo(ray.origin, ray.direction, 0, FLT_MAX);
 
@@ -158,35 +159,29 @@ vec4 trace_ray(Ray ray) {
         }
 
         if (closest_hit.hit_distance == FLT_MAX) {
-            color *= mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z)));
+            light += mix(horizon_color, zenith_color, sqrt(abs(ray.direction.z))) * color;
+
             break;
         }
         else {
             Material material = materials[closest_hit.material_id];
             if (material.emissive == 1.0) {
-                color *= material.emission_color * material.emission_power;
-
-                break;
+                light += material.emission_color * material.emission_power * color;
             }
-            else {
-                color *= material.albedo;
 
-                vec3 reflected = reflect(ray.direction, closest_hit.normal);
+            color *= material.albedo;
 
-                vec3 random_direction = random_on_sphere();
-	            vec3 diffuse = random_direction * sign(dot(random_direction, closest_hit.normal));
+            vec3 reflected = reflect(ray.direction, closest_hit.normal);
 
-                ray.direction  = mix(reflected, diffuse, material.roughness);
-                ray.origin     = closest_hit.hit_origin + ray.direction * 0.001;
-            }
-        }
+            vec3 random_direction = random_on_sphere();
+	        vec3 diffuse = random_direction * sign(dot(random_direction, closest_hit.normal));
 
-        if (reflection == MAX_REFLECTIONS) {
-            color = vec4(0.0, 0.0, 0.0, 1.0);
+            ray.direction  = mix(reflected, diffuse, material.roughness);
+            ray.origin     = closest_hit.hit_origin + ray.direction * 0.001;
         }
     }
         
-    return color;
+    return light;
 }
 
 // --- Main

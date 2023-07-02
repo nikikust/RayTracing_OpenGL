@@ -37,8 +37,8 @@ public:
     uint32_t max_reflections = 2;
 
     gears::LookAt sun_direction = glm::normalize(gears::LookAt{  -1.0f, 1.0f, -1.0f });
-    gears::Color zenith_color { 0.0f, 0.0f, 0.0f, 1.0f };
-    gears::Color horizon_color{ 0.0f, 0.0f, 0.0f, 1.0f};
+    gears::Color zenith_color { 0.2f, 0.3f, 0.4f, 1.0f };
+    gears::Color horizon_color{ 0.1f, 0.1f, 0.2f, 1.0f };
 
     // --- Objects data
 
@@ -50,7 +50,7 @@ public:
 		{ glm::vec4(  0.0f,  300.0f, -10105.0f, 10000.0f), 4 }
     };
     std::vector<tracer::Material> materials{
-        { glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), {}, 0.50f, 0.0f, 1.0f,  50.0f },
+        { glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), glm::vec4(1.0f, 0.2f, 0.2f, 1.0f), {}, 0.00f, 0.0f, 1.0f,  50.0f },
         { glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), glm::vec4(0.2f, 1.0f, 0.2f, 1.0f), {}, 0.05f, 0.0f, 0.0f,   0.0f },
         { glm::vec4(0.2f, 0.2f, 1.0f, 1.0f), glm::vec4(0.2f, 0.2f, 1.0f, 1.0f), {}, 0.00f, 0.0f, 1.0f, 255.0f },
         { glm::vec4(0.1f, 0.5f, 1.0f, 1.0f), glm::vec4(0.1f, 0.5f, 1.0f, 1.0f), {}, 0.00f, 0.0f, 0.0f,   0.0f },
